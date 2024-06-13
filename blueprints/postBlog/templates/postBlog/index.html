@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %} blogs {% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: center; align-items: center; flex-direction: column">
+    <h1>STORIES</h1>
+    {% if bgPost %}
+    {% for i in bgPost %}
+
+    <ul>
+        <li>
+            {{ i.title }}
+            {{ i.body }}
+            <a href="{{ url_for('postBlog.delete', pid=i.pid) }}" style="color: rgb(255, 3, 3);">delete</a>
+        </li>
+    </ul>
+    {% endfor %}
+
+    {% else %}
+    <p>no posts</p>
+    {% endif %}
+
+    <a href="{{ url_for('postBlog.create') }}" style="color: rgb(255, 3, 3);"> create </a>
+</div>
+{% endblock %}

@@ -1,0 +1,15 @@
+# Dev environment
+pip
+autopep8
+
+# App
+flask
+appwrite==5.0.3
+flask-sqlalchemy==3.1.1
+flask-migrate==4.0.7
+
+# for creating db
+
+# flask db init
+# flask db migrate
+# flask db upgrade
