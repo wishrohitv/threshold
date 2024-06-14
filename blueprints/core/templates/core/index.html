@@ -2,8 +2,16 @@
 {% block title %} blogs {% endblock %}
 
 {% block content %}
+<main>
+    <div style="display: flex; justify-content: space-around; align-items: center;">
     <h1>Home</h1>
-    <a href="{{url_for('core.index')}}"> home </a>
-    <a href="{{url_for('postBlog.index')}}"> posts </a>
-
+    <a href="{{url_for( 'core.index') }}"> home </a>
+    <a href="{{url_for( 'stories.index') }}"> posts </a>
+    </div>
+    <style>
+        a{
+            color:rgb(42, 151, 165)
+        }
+    </style>
+</main>
 {% endblock %}

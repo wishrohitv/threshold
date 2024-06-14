@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %} {{ content.title }} {% endblock %}
+
+{% block content %}
+<main>
+    <div class="card w-96 bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title" style="font-size: 45px;">{{ content.title }}</h2>
+            <p>{{ content.desc }}</p>
+            <div id="content-body"></div>
+            
+            <script>
+                document.getElementById("content-body").innerHTML = `{{ content.body | safe }}`;
+            </script>
+            
+        </div>
+    </div>
+</main>
+{% endblock %}
