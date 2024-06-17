@@ -5,7 +5,6 @@ from blueprints.app import db
 from blueprints.stories.models import BlogPost
 
 stories = Blueprint('stories', __name__, template_folder='templates')
-# stories.secret_key = "rohit"
 
 @stories.route('/')
 def index():
@@ -34,11 +33,16 @@ def delete(pid):
     bgPost = BlogPost.query.filter_by(pid=pid).first()
     db.session.delete(bgPost)
     db.session.commit()
-    # flash('post deleted')
+    flash('post deleted')
     return redirect(url_for('stories.index'))
 
 @stories.route('/<int:storie_id>', methods =  ['POST', 'GET'])
 def readByStoryId(storie_id):
     bgPost = BlogPost.query.filter_by(pid=storie_id).first()
     return render_template('stories/stories.html', content=bgPost)
+
+
+@stories.route('/create/preview/<int:pid>', methods =  ['POST', 'GET'])
+def preview(pid):
+    return "preview"
 

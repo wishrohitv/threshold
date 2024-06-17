@@ -22,17 +22,33 @@
     {% if bgPost %}
     {% for model_db in bgPost %}
 
-    <div class="card w-96 bg-base-100 shadow-xl">
-    <!-- <div class="card card-side bg-base-100 shadow-xl"> -->
-        <figure><img src="https://img.daisyui.com/images/stock/photo-1635805737707-575885ab0820.jpg" alt="Movie" />
-        </figure>
-        <div class="card-body">
-            <h2 class="card-title">{{ model_db.title }}</h2>
-            <p>{{ model_dbdesc }}</p>
-            <a href="{{ url_for('stories.readByStoryId', storie_id=model_db.pid) }}" class="btn btn-primary">Read</a>
+        <div class="max-w-xl bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="flex p-4">
+                <div class="flex-shrink-0">
+                    <img class="h-12 w-12 rounded-full" src="https://via.placeholder.com/48" alt="Author avatar">
+                </div>
+                <div class="ml-4">
+                    <div class="text-lg font-medium text-gray-900">Alex Rowe</div>
+                    <div class="mt-1 text-2xl font-bold text-gray-900">Hellblade II: Frustrating Yet Essential</div>
+                    <div class="mt-1 text-sm text-gray-600">I hope you like pushing forward on the left stick</div>
+                    <div class="flex items-center mt-2 text-gray-500">
+                        <span class="mr-2">4d ago</span>
+                        <span class="mr-2">•</span>
+                        <span class="mr-2">318</span>
+                        <svg class="w-4 h-4 inline-block fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                        <span class="mr-2">5</span>
+                        <svg class="w-4 h-4 inline-block fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 12h8v2H6v-2zm6-4H6v2h6V8zm4 4h-2v2h2v-2z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="ml-auto">
+                    <img class="w-32 h-20 object-cover rounded-md" src="https://via.placeholder.com/128" alt="Article thumbnail">
+                </div>
+            </div>
         </div>
-    </div>
-    <br>
 
     <ul>
         <li>
