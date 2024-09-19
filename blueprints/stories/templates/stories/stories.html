@@ -7,9 +7,9 @@
         <!-- <div class="card card-side bg-base-100 shadow-xl"> -->
         <div class="card w-240 bg-base-100 shadow-xl">
             <div class="card-body">
-                <h2 class="card-title" style="font-size: 45px; letter-spacing: 1px;">{{ content.title }}</h2>
+                <h2 class="card-title" style="font-size: 45px; letter-spacing: 1px; line-height: 1;">{{ content.title }}</h2>
                 <br>
-                <p style="font-size: 20px;">{{ content.desc }}</p>
+                <p style="font-size: 20px; color: rgb(119, 82, 153);">{{ content.desc }}</p>
                 <div id="content-body"></div>
 
                 <script>
@@ -18,6 +18,11 @@
 
             </div>
         </div>
+
+        <br>
+
+        <textarea class="textarea textarea-primary" placeholder="Leave a comment..."></textarea>
+        <button class="btn btn-primary">Post</button>
     </div>
 </main>
 {% endblock %}
