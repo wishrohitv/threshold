@@ -1,22 +1,8 @@
-# import os
-
-# from flask import Flask, send_file
-
-# app = Flask(__name__)
-
-# @app.route("/")
-# def index():
-#     return send_file('src/index.html')
-
-# def main():
-#     app.run(port=int(os.environ.get('PORT', 80)))
-
-# if __name__ == "__main__":
-#     main()
 import os
-from blueprints.app import create_app
+from src.app import create_app
+from settings import Settings
 
 flask_app = create_app()
 
 if __name__=="__main__":
-    flask_app.run(port=int(os.environ.get('PORT', 5000)), debug=True)
+    flask_app.run(host=os.environ.get("HOST", Settings.HOST),port=int(os.environ.get('PORT', Settings.PORT)), debug=True)

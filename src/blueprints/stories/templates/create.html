@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+{% block title %}Write Story{% endblock %}
+
+{% block head %}
+
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
+
+<style>
+    .ql-toolbar {
+        border-top-left-radius: 1rem;
+        border-top-right-radius: 1rem;
+    }
+
+    .ql-container {
+        min-height: 450px;
+        border-bottom-left-radius: 1rem;
+        border-bottom-right-radius: 1rem;
+        font-size: 1rem;
+    }
+
+    .ql-editor {
+        line-height: 1.8;
+    }
+</style>
+
+{% endblock %}
+
+{% block body %}
+
+<div class="min-h-screen bg-base-200 py-10 px-4">
+
+    <div class="mx-auto max-w-5xl">
+
+        <div class="card bg-base-100 border border-base-300 shadow-sm">
+
+            <div class="card-body p-6 md:p-8">
+
+                <!-- Header -->
+                <div class="mb-8">
+
+                    <h1 class="text-3xl md:text-4xl font-bold">
+                        Write a New Story
+                    </h1>
+
+                    <p class="text-base-content/60 mt-2">
+                        Share tutorials, experiences, ideas, and stories with the community.
+                    </p>
+
+                </div>
+
+                <!-- Form -->
+                <form id="blog-form" method="post" enctype="multipart/form-data">
+
+                    <!-- Title -->
+                    <div class="form-control mb-6">
+
+                        <label class="label">
+                            <span class="label-text font-semibold">
+                                Story Title
+                            </span>
+                        </label>
+
+                        <input type="text" name="title" placeholder="Building a Scalable Flask API"
+                            class="input input-bordered input-lg w-full" required minlength="8" maxlength="150">
+
+                    </div>
+
+                    <!-- Description -->
+                    <div class="form-control mb-6">
+
+                        <label class="label">
+                            <span class="label-text font-semibold">
+                                Short Description
+                            </span>
+                        </label>
+
+                        <textarea name="desc" placeholder="Give readers a quick summary of your story..."
+                            class="textarea textarea-bordered h-24" required minlength="8" maxlength="200"></textarea>
+
+                    </div>
+
+                    <!-- Tags -->
+                    <div class="form-control mb-6">
+
+                        <label class="label">
+                            <span class="label-text font-semibold">
+                                Story Tags
+                            </span>
+                        </label>
+
+                        <input type="text" name="tags" placeholder="Python,flask (Comma seperated)"
+                            class="input input-bordered input-lg w-full" required minlength="4" maxlength="50">
+
+                    </div>
+
+                    <!-- Banner Upload -->
+                    <div class="form-control mb-6">
+
+                        <label class="label">
+                            <span class="label-text font-semibold">
+                                Banner Image
+                            </span>
+                        </label>
+
+                        <input type="file" id="banner" name="banner" accept="image/*"
+                            class="file-input file-input-bordered w-full" required>
+
+                        <img id="banner-preview"
+                            class="hidden mt-4 rounded-2xl max-h-80 w-full object-cover border border-base-300"
+                            alt="Banner Preview">
+
+                    </div>
+
+                    <!-- Story Content -->
+                    <div class="mb-8">
+
+                        <label class="label">
+                            <span class="label-text font-semibold">
+                                Story Content
+                            </span>
+                        </label>
+
+                        <input id="body" type="hidden" name="body">
+
+                        <div id="editor" class="bg-base-100"></div>
+
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex justify-end gap-3">
+
+                        <button type="reset" class="btn btn-ghost">
+                            Clear
+                        </button>
+
+                        <button type="submit" class="btn btn-primary">
+                            Publish Story
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+<!-- Quill -->
+
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+
+<script>
+
+    const quill = new Quill('#editor', {
+        theme: 'snow',
+        modules: {
+            toolbar: [
+                [{ header: [1, 2, 3, false] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                ['blockquote', 'code-block'],
+                [{ list: 'ordered' }, { list: 'bullet' }],
+                [{ script: 'sub' }, { script: 'super' }],
+                [{ indent: '-1' }, { indent: '+1' }],
+                [{ color: [] }, { background: [] }],
+                [{ align: [] }],
+                ['link', 'image'],
+                ['clean']
+            ]
+        }
+    });
+
+    const bannerInput = document.getElementById("banner");
+    const preview = document.getElementById("banner-preview");
+
+    bannerInput.addEventListener("change", (e) => {
+
+        const file = e.target.files[0];
+
+        if (!file) {
+            preview.classList.add("hidden");
+            preview.src = "";
+            return;
+        }
+
+        preview.src = URL.createObjectURL(file);
+        preview.classList.remove("hidden");
+
+    });
+
+    document
+        .getElementById("blog-form")
+        .addEventListener("submit", () => {
+
+            document.getElementById("body").value =
+                quill.root.innerHTML;
+
+        });
+
+</script>
+
+{% endblock %}

@@ -1,15 +1,24 @@
-# Dev environment
-pip
-autopep8
-
-# App
-flask
+alembic==1.14.0
 appwrite==5.0.3
-flask-sqlalchemy==3.1.1
-flask-migrate==4.0.7
-
-# for creating db
-
-# flask db init
-# flask db migrate
-# flask db upgrade
+autopep8==2.3.1
+blinker==1.9.0
+certifi==2024.8.30
+charset-normalizer==3.4.0
+click==8.1.7
+Flask==3.1.0
+Flask-Migrate==4.0.7
+Flask-SQLAlchemy==3.1.1
+greenlet==3.1.1
+idna==3.10
+itsdangerous==2.2.0
+Jinja2==3.1.4
+Mako==1.3.6
+MarkupSafe==3.0.2
+passlib==1.7.4
+psycopg2==2.9.10
+pycodestyle==2.12.1
+requests==2.32.3
+SQLAlchemy==2.0.36
+typing_extensions==4.12.2
+urllib3==2.2.3
+Werkzeug==3.1.3

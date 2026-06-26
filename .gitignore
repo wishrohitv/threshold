@@ -1,2 +1,6 @@
 .venv
 .vscode
+.idea
+**/__pycache__/
+**/instance/
+**/migrations/

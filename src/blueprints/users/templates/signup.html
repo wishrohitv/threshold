@@ -1,0 +1,281 @@
+{% extends "base.html" %}
+{% block title %}Sign Up | Threshold{% endblock %}
+
+{% block body %}
+<section class="min-h-[calc(100vh-4rem)] flex items-center justify-center bg-base-200/30 px-4 py-12">
+
+    <div class="card w-full max-w-md bg-base-100 border border-base-300 shadow-sm">
+
+        <div class="card-body p-8">
+
+            <!-- Header -->
+            <div class="text-center mb-4">
+
+                <div
+                    class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10">
+
+                    <i class="fa-solid fa-user-plus text-xl text-primary"></i>
+
+                </div>
+
+                <h1 class="text-3xl font-bold text-base-content">
+                    Create Account
+                </h1>
+
+                <p class="mt-2 text-base-content/60">
+                    Join Threshold and start publishing stories.
+                </p>
+
+            </div>
+
+            <!-- Form -->
+            <form method="POST" enctype="multipart/form-data" class="space-y-5">
+
+                <!-- Name -->
+                <div>
+                    <label class="label">
+                        <span class="label-text font-medium">
+                            Full Name
+                        </span>
+                    </label>
+
+                    <label class="input input-bordered flex items-center gap-3">
+                        <i class="fa-regular fa-user text-base-content/50"></i>
+
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            placeholder="John Doe"
+                            class="grow"
+                            required
+                            autocomplete="name">
+                    </label>
+                </div>
+
+                <!-- Username -->
+                <div>
+                    <label class="label">
+                        <span class="label-text font-medium">
+                            Username
+                        </span>
+                    </label>
+
+                    <label class="input input-bordered flex items-center gap-3">
+                        <i class="fa-solid fa-at text-base-content/50"></i>
+
+                        <input
+                            type="text"
+                            id="username"
+                            name="username"
+                            placeholder="johndoe"
+                            class="grow"
+                            required
+                            autocomplete="username">
+                    </label>
+                </div>
+
+                <!-- Email -->
+                <div>
+                    <label class="label">
+                        <span class="label-text font-medium">
+                            Email Address
+                        </span>
+                    </label>
+
+                    <label class="input input-bordered flex items-center gap-3">
+                        <i class="fa-regular fa-envelope text-base-content/50"></i>
+
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="you@example.com"
+                            class="grow"
+                            required
+                            autocomplete="email">
+                    </label>
+                </div>
+
+                <!-- Password -->
+                <div>
+
+                    <label class="label">
+                        <span class="label-text font-medium">
+                            Password
+                        </span>
+                    </label>
+
+                    <label class="input input-bordered flex items-center gap-3">
+
+                        <i class="fa-solid fa-lock text-base-content/50"></i>
+
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Create a password"
+                            class="grow"
+                            required
+                            minlength="8"
+                            autocomplete="new-password">
+
+                        <button
+                            type="button"
+                            onclick="togglePassword('password', 'passwordEye')"
+                            class="text-base-content/50 hover:text-primary transition">
+
+                            <i
+                                id="passwordEye"
+                                class="fa-regular fa-eye">
+                            </i>
+
+                        </button>
+
+                    </label>
+
+                    <label class="label">
+                        <span class="label-text-alt text-base-content/50">
+                            At least 8 characters
+                        </span>
+                    </label>
+
+                </div>
+
+                <!-- Confirm Password -->
+                <div>
+
+                    <label class="label">
+                        <span class="label-text font-medium">
+                            Confirm Password
+                        </span>
+                    </label>
+
+                    <label class="input input-bordered flex items-center gap-3">
+
+                        <i class="fa-solid fa-shield-halved text-base-content/50"></i>
+
+                        <input
+                            type="password"
+                            id="confirm_password"
+                            name="confirm_password"
+                            placeholder="Confirm your password"
+                            class="grow"
+                            required
+                            autocomplete="new-password">
+
+                        <button
+                            type="button"
+                            onclick="togglePassword('confirm_password', 'confirmEye')"
+                            class="text-base-content/50 hover:text-primary transition">
+
+                            <i
+                                id="confirmEye"
+                                class="fa-regular fa-eye">
+                            </i>
+
+                        </button>
+
+                    </label>
+
+                </div>
+
+                <!-- Profile Photo -->
+                <div>
+
+                    <label class="label">
+                        <span class="label-text font-medium">
+                            Profile Photo
+                        </span>
+                    </label>
+
+                    <input
+                        type="file"
+                        id="avatar"
+                        name="avatar"
+                        accept="image/*"
+                        class="file-input file-input-bordered w-full">
+
+                </div>
+
+                <!-- Terms -->
+                <label class="flex items-start gap-3 cursor-pointer">
+
+                    <input
+                        type="checkbox"
+                        name="terms"
+                        class="checkbox checkbox-primary checkbox-sm mt-1"
+                        required>
+
+                    <span class="text-sm text-base-content/70">
+
+                        I agree to the
+
+                        <a
+                            href="#"
+                            class="text-primary hover:underline">
+
+                            Terms of Service
+
+                        </a>
+
+                    </span>
+
+                </label>
+
+                <!-- Submit -->
+                <button
+                    type="submit"
+                    class="btn btn-primary w-full">
+
+                    Create Account
+
+                    <i class="fa-solid fa-arrow-right ml-1"></i>
+
+                </button>
+
+            </form>
+
+            <!-- Divider -->
+            <div class="divider my-6 text-base-content/40">
+                OR
+            </div>
+
+            <!-- Footer -->
+            <p class="text-center text-sm text-base-content/70">
+
+                Already have an account?
+
+                <a
+                    href="{{ url_for('users.login') }}"
+                    class="font-semibold text-primary hover:underline">
+
+                    Sign In
+
+                </a>
+
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+<script>
+function togglePassword(inputId, iconId) {
+    const input = document.getElementById(inputId);
+    const icon = document.getElementById(iconId);
+
+    if (input.type === "password") {
+        input.type = "text";
+        icon.classList.remove("fa-eye");
+        icon.classList.add("fa-eye-slash");
+    } else {
+        input.type = "password";
+        icon.classList.remove("fa-eye-slash");
+        icon.classList.add("fa-eye");
+    }
+}
+</script>
+{% endblock %}

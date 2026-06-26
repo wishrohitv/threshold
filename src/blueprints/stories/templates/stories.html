@@ -1,0 +1,225 @@
+{% extends "base.html" %} {% block title %}{{ story.title }}{% endblock %} {%
+block body %}
+
+<div class="max-w-4xl mx-auto px-4 py-10">
+  <!-- Article -->
+  <article
+    class="bg-base-100 rounded-3xl shadow-sm border border-base-300 p-6 md:p-10"
+  >
+    <!-- Title -->
+    <h1 class="text-4xl md:text-6xl font-bold leading-tight">
+      {{ story.title }}
+    </h1>
+
+    <!-- Description -->
+    <p class="mt-6 text-xl text-base-content/70">{{ story.desc }}</p>
+
+    <!-- Author Section -->
+    <div class="flex flex-wrap items-center justify-between gap-4 mt-8">
+      <div class="flex items-center gap-4">
+        <div class="avatar">
+          <div class="w-14 rounded-full">
+            <img src="{{url_for('users.avatar', user_id=story.user_id)}}" />
+          </div>
+        </div>
+
+        <div>
+          <h3 class="font-semibold text-lg">{{ story.name }}</h3>
+
+          <div
+            class="flex flex-wrap items-center gap-2 text-sm text-base-content/60"
+          >
+            <span>
+              <i class="fa-regular fa-calendar"></i>
+              {{ story.date_created }}
+            </span>
+
+            <span>•</span>
+
+            <span>
+              <i class="fa-regular fa-clock"></i>
+              5 min read
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="flex flex-wrap items-center gap-6 text-base-content/70">
+        <div class="flex items-center gap-2">
+          <i class="fa-regular fa-eye"></i>
+          <span>{{ story.views }}</span>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <i class="fa-regular fa-heart"></i>
+          <span>{{ story.like_count }}</span>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <i class="fa-regular fa-thumbs-down"></i>
+          <span>{{ story.dislike_count }}</span>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <i class="fa-regular fa-comment"></i>
+          <span>{{ story.comment_count }}</span>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <i class="fa-regular fa-bookmark"></i>
+          <span>{{ bookmark_count }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <div class="divider my-8"></div>
+
+    <!-- Content -->
+    <div id="content-body" class="prose prose-lg max-w-none"></div>
+
+    <script>
+      document.getElementById("content-body").innerHTML =
+        `{{ story.body | safe }}`;
+    </script>
+
+    <!-- Bottom Actions -->
+    <div class="divider my-10"></div>
+
+    <div class="flex flex-wrap gap-3">
+      <!-- Like button -->
+      {% if story.is_liked %}
+      <form
+        action="{{ url_for('stories.like', story_id=story.id) }}"
+        method="post"
+      >
+        <button class="btn btn-neutral">
+          <i class="fa-regular fa-heart"></i>
+          Like
+        </button>
+      </form>
+      {% else %}
+      <form
+        action="{{ url_for('stories.like', story_id=story.id) }}"
+        method="post"
+      >
+        <button class="btn btn-outline">
+          <i class="fa-regular fa-heart"></i>
+          Like
+        </button>
+      </form>
+      {% endif %}
+
+      <!-- Dislike button -->
+      {% if story.is_disliked %}
+      <form
+        action="{{ url_for('stories.dislike', story_id=story.id) }}"
+        method="post"
+      >
+        <button class="btn btn-neutral">
+          <i class="fa-regular fa-thumbs-down"></i>
+          Dislike
+        </button>
+      </form>
+      {% else %}
+      <form
+        action="{{ url_for('stories.dislike', story_id=story.id) }}"
+        method="post"
+      >
+        <button class="btn btn-outline">
+          <i class="fa-regular fa-thumbs-down"></i>
+          Dislike
+        </button>
+      </form>
+      {% endif %}
+
+      <!-- Bookmark -->
+      <form
+        action="{{ url_for('stories.bookmark', story_id=story.id) }}"
+        method="post"
+      >
+        {% if story.is_bookmarked %}
+        <button class="btn btn-neutral">
+          <i class="fa-regular fa-bookmark"></i>
+          Saved
+        </button>
+        {% else %}
+        <button class="btn btn-outline">
+          <i class="fa-regular fa-bookmark"></i>
+          Save
+        </button>
+        {% endif %}
+      </form>
+
+      <button class="btn btn-outline">
+        <i class="fa-solid fa-share"></i>
+        Share
+      </button>
+    </div>
+  </article>
+
+  <!-- Comments -->
+  <section class="mt-8">
+    <div class="card bg-base-100 border border-base-300 shadow-sm">
+      <div class="card-body">
+        <h2 class="card-title text-2xl">
+          Comments ({{ story.comment_count }})
+        </h2>
+
+        <!-- Comment Form -->
+        <form method="post" class="mt-4">
+          <textarea
+            name="comment"
+            class="textarea textarea-bordered w-full h-28"
+            placeholder="Share your thoughts..."
+            required
+          ></textarea>
+
+          <div class="mt-3 flex justify-end">
+            <button class="btn btn-primary" type="submit">Post Comment</button>
+          </div>
+        </form>
+
+        <!-- Comments List -->
+        <div class="mt-8 space-y-4">
+          {% for comment in comments %}
+
+          <div class="border border-base-300 rounded-2xl p-4">
+            <div class="flex items-center gap-3 mb-2">
+              <div class="avatar">
+                <div class="w-10 rounded-full">
+                  <a
+                    href="{{ url_for('users.profile', username=comment.username) }}"
+                  >
+                    <img
+                      src="{{url_for('users.avatar', user_id=comment.user_id)}}"
+                    />
+                  </a>
+                </div>
+              </div>
+
+              <div>
+                <a
+                  href="{{ url_for('users.profile', username=comment.username) }}"
+                >
+                  <h4 class="font-medium">{{ comment.name }}</h4>
+                </a>
+
+                <p class="text-xs text-base-content/60">
+                  {{ comment.date_created }}
+                </p>
+              </div>
+            </div>
+
+            <p>{{ comment.body | safe }}</p>
+          </div>
+
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+{% endblock %}

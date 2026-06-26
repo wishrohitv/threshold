@@ -1,0 +1,116 @@
+{% macro post_card(story) %}
+<div class="max-w-xl mx-auto">
+  <div
+    class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-xl transition-all duration-300"
+  >
+    <!-- Cover -->
+    <figure>
+      <img
+        src="{{url_for('stories.banner', story_id=story.id)}}"
+        alt="Blog Cover"
+        class="h-56 w-full object-cover"
+      />
+    </figure>
+
+    <!-- Content -->
+    <div class="card-body">
+      <!-- Tags -->
+      <div class="flex flex-wrap gap-2">
+        {% for tag in story.tags %}
+        <div
+          class="badge badge-outline {% if loop.index0 == 0 %}badge-primary{% elif loop.index0 == 1 %}badge-secondary{% else %}badge-accent{% endif %}"
+        >
+          {{ tag }}
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Title -->
+      <a
+        href="{{url_for('stories.story', story_uid=story['story_uid'],  slug=generate_slug_from_title(story['title']))}}"
+        class="card-title text-2xl mt-2"
+      >
+        {{story.title}}
+      </a>
+
+      <!-- Description -->
+      <p class="text-base-content/70">{{story.desc}}</p>
+
+      <!-- Divider -->
+      <div class="divider my-1"></div>
+
+      <!-- Author + Date -->
+      <div class="flex items-center gap-3">
+        <div class="avatar">
+          <div class="w-11 rounded-full">
+            <img src="{{url_for('users.avatar', user_id=story.user_id)}}" />
+          </div>
+        </div>
+
+        <div class="flex-1">
+          <a
+            href="{{url_for('users.profile', username=story['username'])}}"
+            class="flex flex flex-row justify-start items-center"
+          >
+            <span class="font-semibold">{{story.name}}</span>
+            <p class="text-sm text-base-content/90 pl-2">@{{story.username}}</p>
+          </a>
+
+          <div class="flex flex-wrap gap-2 text-sm text-base-content/60">
+            <span>
+              <i class="fa-regular fa-calendar mr-1"></i>
+              {{story.date_created}}
+            </span>
+
+            <span>•</span>
+
+            <span>
+              <i class="fa-regular fa-clock mr-1"></i>
+              5 min read
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Stats -->
+      <div
+        class="flex items-center justify-between mt-4 pt-4 border-t border-base-300"
+      >
+        <div class="flex items-center gap-4">
+          <div
+            class="flex items-center gap-3 rounded-full bg-base-200 px-3 py-2"
+          >
+            <button class="hover:text-success transition">
+              <i class="fa-solid fa-thumbs-up"></i>
+            </button>
+
+            <span class="font-semibold">{{story.like_count}}</span>
+
+            <button class="hover:text-error transition">
+              <i class="fa-solid fa-thumbs-down"></i>
+            </button>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <i class="fa-regular fa-comment"></i>
+            <span>{{story.comment_count}}</span>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <i
+              class="{% if story.is_bookmarked %} fa-solid {% else %} fa-regular{% endif %} fa-bookmark"
+            ></i>
+            <span>{{ story.bookmark_count }}</span>
+          </div>
+        </div>
+
+        <a
+          href="{{url_for('stories.story', story_uid=story['story_uid'],  slug=generate_slug_from_title(story['title']))}}"
+          class="btn btn-primary btn-sm"
+          >Read More</a
+        >
+      </div>
+    </div>
+  </div>
+</div>
+{% endmacro %}

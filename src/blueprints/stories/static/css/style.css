@@ -1,0 +1,6 @@
+.pencil:hover{
+    color: rgb(255, 0, 0);
+    border-style: solid;
+    border-radius: 20px;
+    border-color: blueviolet;
+}

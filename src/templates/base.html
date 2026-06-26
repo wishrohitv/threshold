@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='icons/quill-pen.png') }}" type="image/x-icon">
+    <title>{% block title %} Threshold {% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.2/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    {% block head %} {% endblock %}
+
+</head>
+
+<body>
+    <!-- Message flashing -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <ul class=flashes>
+        {% for category, message in messages %}
+        <li class="{{ category }}">{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+
+
+    <nav class="navbar bg-base-100 border-b border-base-300 px-4 md:px-6">
+
+        <!-- Left -->
+        <div class="navbar-start">
+
+            <div class="dropdown">
+
+                <button tabindex="0" class="btn btn-ghost btn-circle">
+
+                    <i class="fa-solid fa-bars text-base"></i>
+
+                </button>
+
+                <ul tabindex="0"
+                    class="menu menu-sm dropdown-content mt-3 z-50 w-56 rounded-xl border border-base-300 bg-base-100 p-2 shadow-sm">
+
+                    <li>
+                        <a href="/">
+                            <i class="fa-solid fa-house w-4"></i>
+                            Home
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="#">
+                            <i class="fa-solid fa-briefcase w-4"></i>
+                            Portfolio
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{{ url_for('about.index') }}">
+                            <i class="fa-solid fa-circle-info w-4"></i>
+                            About
+                        </a>
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+        <!-- Brand -->
+        <div class="navbar-center">
+
+            <a href="/" class="flex items-center gap-2 font-bold text-xl btn">
+
+                <img src="{{ url_for('static', filename='icons/quill-pen.png') }}" alt="Threshold"
+                    class="h-7 w-7 object-contain">
+
+                <span>
+                    Threshold
+                </span>
+
+            </a>
+
+        </div>
+
+        <!-- Right -->
+        <div class="navbar-end gap-1">
+
+            <!-- Search -->
+            <button class="btn btn-ghost btn-circle">
+
+                <i class="fa-solid fa-magnifying-glass"></i>
+
+            </button>
+
+            {% if session.get("username") %}
+
+            <!-- Write Story -->
+            <a href="{{ url_for('stories.create') }}" class="btn btn-ghost gap-2 hidden sm:flex">
+
+                <i class="fa-solid fa-pen"></i>
+
+                Write
+
+            </a>
+
+            <!-- Mobile Write -->
+            <a href="{{ url_for('stories.create') }}" class="btn btn-ghost btn-circle sm:hidden">
+
+                <i class="fa-solid fa-pen"></i>
+
+            </a>
+
+            <!-- Profile -->
+            <a href="{{ url_for('users.profile', username=session['username']) }}" class="ml-1">
+
+                <div class="avatar">
+
+                    <div class="w-10 rounded-full border border-base-300">
+
+                        <img src="{{ url_for('users.avatar', user_id=session['id']) }}" alt="{{ session['username'] }}">
+
+                    </div>
+
+                </div>
+
+            </a>
+
+            {% else %}
+
+            <div class="flex items-center gap-2 ml-2">
+
+                <a href="{{ url_for('users.login') }}" class="btn btn-ghost">
+
+                    Login
+
+                </a>
+
+                <a href="{{ url_for('users.signup') }}" class="btn btn-primary">
+
+                    Sign Up
+
+                </a>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </nav>
+    {% block body %} {% endblock %}
+
+    <!-- footer -->
+    <footer class="border-t border-base-300 bg-base-100">
+
+        <div class="mx-auto max-w-7xl px-4 py-6 md:px-6">
+
+            <div class="flex flex-col items-center justify-between gap-4 md:flex-row">
+
+                <!-- Brand -->
+                <div class="flex items-center gap-3">
+
+                    <img src="{{ url_for('static', filename='icons/quill-pen.png') }}" alt="Threshold"
+                        class="h-6 w-6 object-contain">
+
+                    <div>
+
+                        <p class="font-semibold text-base-content">
+                            Threshold
+                        </p>
+
+                        <p class="text-sm text-base-content/60">
+                            Stories worth sharing.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <!-- Links -->
+                <div class="flex items-center gap-6 text-sm">
+
+                    <a href="/" class="text-base-content/70 hover:text-primary transition">
+
+                        Home
+
+                    </a>
+
+                    <a href="{{ url_for('about.index') }}" class="text-base-content/70 hover:text-primary transition">
+
+                        About
+
+                    </a>
+
+                    <a href="#" class="text-base-content/70 hover:text-primary transition">
+
+                        Portfolio
+
+                    </a>
+
+                </div>
+
+                <!-- Socials -->
+                <div class="flex items-center gap-4">
+
+                    <a href="https://x.com/Rohit_Wish" target="_blank" class="text-base-content/60 hover:text-primary transition">
+
+                        <i class="fa-brands fa-x-twitter text-lg"></i>
+
+                    </a>
+
+                    <a href="https://youtube.com/@wishrohitv" target="_blank" class="text-base-content/60 hover:text-primary transition">
+
+                        <i class="fa-brands fa-youtube text-lg"></i>
+
+                    </a>
+
+                    <a href="https://github.com/wishrohitv" target="_blank" class="text-base-content/60 hover:text-primary transition">
+
+                        <i class="fa-brands fa-github text-lg"></i>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+            <!-- Bottom -->
+
+            <div class="mt-6 border-t border-base-300 pt-4">
+
+                <p class="text-center text-sm text-base-content/60">
+
+                    Made with love <i class="fa-solid fa-heart fa-bounce" style="color: rgb(255, 0, 242);"></i>.
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </footer>
+</body>
+
+</html>
