@@ -32,6 +32,7 @@ def create_app():
     from .blueprints.users.routes import users 
     from .blueprints.stories.routes import stories
     from .blueprints.about.routes import about
+    from .blueprints.search.routes import search_bp
   
     app.register_blueprint(index_bp, url_prefix="/")
 
@@ -41,11 +42,13 @@ def create_app():
 
     app.register_blueprint(about, url_prefix= '/about')
 
+    app.register_blueprint(search_bp, url_prefix= '/search')
+
     @app.errorhandler(404)
     def handle_404(e):
         return return_404_page(e)
 
-    migrate = Migrate(app, db)
+    migrate = Migrate(app, db)  # noqa: F841
 
 
     return app

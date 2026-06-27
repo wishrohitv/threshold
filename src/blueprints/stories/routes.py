@@ -24,8 +24,8 @@ stories = Blueprint("stories", __name__, template_folder="templates")
 def story(story_uid=None, slug=None):
     session_user_id = session.get("id")
     check_story = db.session.execute(
-        db.select(Story.id, Story.title, Story.views).filter_by(story_uid=story_uid)
-    ).first()
+        db.select(Story).filter_by(story_uid=story_uid)
+    ).scalar()
 
     if not check_story:
         abort(404)
@@ -36,11 +36,12 @@ def story(story_uid=None, slug=None):
         return redirect(url_for("stories.story", story_uid=story_uid, slug=new_slug))
     # Update views
 
-    db.session.execute(
-        db.update(Story)
-        .where(Story.id == check_story.id)
-        .values(views=Story.views or 0 + 1)
-    )
+    check_story.views = check_story.views or +1
+    # db.session.execute(
+    #     db.update(Story)
+    #     .where(Story.id == check_story.id)
+    #     .values(views=Story.views or 0 + 1)
+    # )
     db.session.commit()
 
     like_count = (

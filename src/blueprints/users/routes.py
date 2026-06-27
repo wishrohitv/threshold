@@ -7,12 +7,14 @@ from flask import (
     flash,
     session,
     send_file,
+    abort,
 )
 from sqlalchemy.sql.elements import or_
 from passlib.hash import sha256_crypt as encryption
 from io import BytesIO
 from src.app import db
 from .models import User
+from src.blueprints.stories.models import Story, Comments, Bookmark, Like
 
 users = Blueprint("users", __name__, template_folder="templates")
 
@@ -87,15 +89,99 @@ def login():
 
 @users.route("/<string:username>", methods=["GET"])
 def profile(username):
+    tab = request.args.get("tab", default="post", type=str)
+
+    if tab not in ["post", "comment"]:
+        abort(404)
+
     user = db.session.execute(
         db.select(
             User.id,
             User.username,
             User.name,
+            User.bio,
             User.date_created,
         ).filter_by(username=username)
     ).first()
-    return render_template("profile.html", user=user)
+    if not user:
+        abort(404)
+
+    _user = {
+        "id": user.id,
+        "username": user.username,
+        "name": user.name,
+        "bio": user.bio,
+        "date_created": user.date_created.strftime("%B %Y"),
+    }
+
+    stats = db.session.execute(
+        db.select(
+            db.select(db.func.count(Story.id))
+            .where(Story.user_id == user.id)
+            .scalar_subquery()
+            .label("post_count"),
+            db.select(db.func.count(Like.id))
+            .join(Story, Story.id == Like.story_id)
+            .where(Story.user_id == user.id, Like.like == 1)
+            .scalar_subquery()
+            .label("like_count"),
+            db.select(db.func.count(Comments.id))
+            .join(Story, Story.id == Comments.story_id)
+            .where(Comments.user_id == user.id)
+            .scalar_subquery()
+            .label("comment_count"),
+            db.select(db.func.coalesce(db.func.sum(Story.views), 0))
+            .where(Story.user_id == user.id)
+            .scalar_subquery()
+            .label("views_count"),
+        )
+    ).one()
+    stories = None
+    comments = None
+    if tab == "post":
+        stories = db.session.execute(
+            db.select(
+                Story.id,
+                Story.title,
+                Story.desc,
+                Story.date_created,
+                Story.views.label("views_count"),
+                db.select(db.func.count(Like.id))
+                .where(Like.story_id == Story.id, Like.like == 1)
+                .scalar_subquery()
+                .label("like_count"),
+                db.select(db.func.count(Comments.id))
+                .where(Comments.story_id == Story.id)
+                .scalar_subquery()
+                .label("comment_count"),
+            )
+            .filter_by(user_id=user.id)
+            .limit(10)
+            .order_by(Story.date_created.desc())
+        ).all()
+    else:
+        comments = db.session.execute(
+            db.select(
+                Comments.id,
+                Comments.body,
+                Comments.date_created,
+                Story.title.label("story_title"),
+                Story.id.label("story_id"),
+            )
+            .join(Story, Story.id == Comments.story_id)
+            .filter_by(user_id=user.id)
+            .limit(15)
+            .order_by(Comments.date_created.desc())
+        ).all()
+
+    return render_template(
+        "profile.html",
+        user=_user,
+        stats=stats._mapping,
+        stories=stories,
+        comments=comments,
+        tab=tab,
+    )
 
 
 @users.route("/change-password", methods=["GET", "POST"])

@@ -1,5 +1,10 @@
-{% extends "base.html" %}
+{% extends "base.html" %} {% block body %}
+<div>Search your thaughts</div>
+<form method="post">
+  <label for="search">Search</label>
+  <input type="text" name="query" value="{{query}}" />
+  <button type="submit">Search</button>
+</form>
 
-{% block body %}
-<div>This is search page</div>
-{% endblock %}
+<p>Result for '{{query}}'</p>
+{{result}} {% endblock %}

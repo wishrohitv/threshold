@@ -90,11 +90,11 @@
         <div class="navbar-end gap-1">
 
             <!-- Search -->
-            <button class="btn btn-ghost btn-circle">
+            <a href="{{url_for('search.search')}}" class="btn btn-ghost btn-circle">
 
                 <i class="fa-solid fa-magnifying-glass"></i>
 
-            </button>
+            </a>
 
             {% if session.get("username") %}
 
