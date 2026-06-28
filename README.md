@@ -1,4 +1,9 @@
+<div align="center">
+  <img src="src/static/icons/quill-pen-256.png" alt="Threshold logo" width="96" />
+
 # Threshold
+
+</div>
 
 A blogging platform built with Flask where users can write and share stories, engage through comments, likes, bookmarks, and discover content through search.
 
@@ -188,16 +193,27 @@ flask db upgrade
 
 ## Code Style Guidelines
 
-This project uses `autopep8` for formatting and `pycodestyle` for linting (both listed in `requirements.txt`).
+This project uses [Ruff](https://docs.astral.sh/ruff/) for both formatting and linting.
+
+### Formatting
+
+Run Ruff before committing:
+
+```bash
+# Format all source files
+ruff format src/
+
+# Lint and auto-fix where possible
+ruff check --fix src/
+```
+
+Ruff replaces `autopep8` and `pycodestyle`. If you see those in `requirements.txt` they are legacy and can be ignored in favour of Ruff.
 
 ### Python
 
-- Follow [PEP 8](https://peps.python.org/pep-0008/). Run `autopep8` before committing:
-  ```bash
-  autopep8 --in-place --aggressive --recursive src/
-  ```
+- Follow [PEP 8](https://peps.python.org/pep-0008/).
 - Use 4-space indentation. No tabs.
-- Keep lines at or under 79 characters where practical.
+- Keep lines at or under 88 characters (Ruff's default line length).
 - Use f-strings for string interpolation, not `%` or `.format()`.
 - All route handler functions must have a single explicit `return` statement at the end. Early returns for auth/guard checks are fine.
 - Flash messages must include a category — `"success"`, `"danger"`, or `"warning"`. No bare `flash("message")` calls.
@@ -226,4 +242,16 @@ This project uses `autopep8` for formatting and `pycodestyle` for linting (both 
 
 ### Slug Generation
 
-Slugs are produced by `src/utils/generate_slug.py`. When adding new URL-generating logic, import and reuse `generate_slug_from_title` — do not write a second implementation.
+Slugs are produced by `src/utils/generate_slug.py` and follow the same pattern used by Medium — special characters and spaces are replaced with hyphens, consecutive hyphens are collapsed, and the result is lowercased. Example:
+
+```
+"Hello, World! My Story" → "hello-world-my-story"
+```
+
+The `story_uid` is then appended to the slug in the URL to ensure uniqueness:
+
+```
+/stories/hello-world-my-story-<story_uid>
+```
+
+When adding new URL-generating logic, import and reuse `generate_slug_from_title` — do not write a second implementation.
