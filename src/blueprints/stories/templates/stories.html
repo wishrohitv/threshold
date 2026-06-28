@@ -1,7 +1,7 @@
 {% extends "base.html" %} {% block title %}{{ story.title }}{% endblock %} {%
 block body %}
 
-<div class="max-w-4xl mx-auto px-4 py-10">
+<div class="max-w-4xl mx-auto px-4 pb-10 pt-4">
   <!-- Article -->
   <article
     class="bg-base-100 rounded-3xl shadow-sm border border-base-300 p-6 md:p-10"
@@ -18,13 +18,20 @@ block body %}
     <div class="flex flex-wrap items-center justify-between gap-4 mt-8">
       <div class="flex items-center gap-4">
         <div class="avatar">
-          <div class="w-14 rounded-full">
+          <a
+            href="{{url_for('users.profile', username=story.username)}}"
+            class="w-14 rounded-full hover:scale-60"
+          >
             <img src="{{url_for('users.avatar', user_id=story.user_id)}}" />
-          </div>
+          </a>
         </div>
 
         <div>
-          <h3 class="font-semibold text-lg">{{ story.name }}</h3>
+          <a
+            href="{{url_for('users.profile', username=story.username)}}"
+            class="font-semibold text-lg hover:text-primary"
+            >{{ story.name }}</a
+          >
 
           <div
             class="flex flex-wrap items-center gap-2 text-sm text-base-content/60"
@@ -68,7 +75,7 @@ block body %}
 
         <div class="flex items-center gap-2">
           <i class="fa-regular fa-bookmark"></i>
-          <span>{{ bookmark_count }}</span>
+          <span>{{ story.bookmark_count }}</span>
         </div>
       </div>
     </div>
@@ -136,7 +143,18 @@ block body %}
 
       <!-- Bookmark -->
       <form
+        {%
+        if
+        story.is_bookmarked
+        %}
         action="{{ url_for('stories.bookmark', story_id=story.id) }}"
+        {%
+        else
+        %}
+        action="{{ url_for('stories.remove_bookmark', story_id=story.id) }}"
+        {%
+        endif
+        %}
         method="post"
       >
         {% if story.is_bookmarked %}
@@ -156,6 +174,35 @@ block body %}
         <i class="fa-solid fa-share"></i>
         Share
       </button>
+
+      <!-- Author specific -->
+      {% if story.user_id == session.get("id") %}
+      <!-- Delete post -->
+      <form
+        action="{{url_for('stories.delete', story_id=story.id)}}"
+        ,
+        method="post"
+      >
+        <button class="btn btn-error" , type="submit">
+          <i class="fa-solid fa-trash"></i>
+
+          Delete Story
+        </button>
+      </form>
+
+      <!-- Edit post -->
+      <form
+        action="{{url_for('stories.edit_story', story_uid=story.story_uid)}}"
+        ,
+        method="get"
+      >
+        <button class="btn btn-error" , type="submit">
+          <i class="fa-solid fa-pen"></i>
+
+          Edit Story
+        </button>
+      </form>
+      {% endif %}
     </div>
   </article>
 
@@ -214,7 +261,17 @@ block body %}
 
             <p>{{ comment.body | safe }}</p>
           </div>
+          <form
+            action="{{url_for('stories.delete_comment', story_uid=story.story_uid, comment_id=comment.id)}}"
+            ,
+            method="post"
+          >
+            <button class="btn btn-error" , type="submit">
+              <i class="fa-solid fa-trash"></i>
 
+              Delete Comment
+            </button>
+          </form>
           {% endfor %}
         </div>
       </div>

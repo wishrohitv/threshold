@@ -1,77 +1,9 @@
-{% extends "base.html" %} {% block body %}
+{% extends "base.html" %} {% block title %} All Stories {% endblock %} {% block
+body %}
+<div class="max-w-4xl mx-auto px-4 py-10">
+  <h1 class="text-3xl font-bold">All Stories</h1>
 
-<div class="mx-auto max-w-4xl px-4 pb-8 pt-2">
-  <!-- Header -->
-
-  <div class="mb-8 text-center">
-    <h1 class="text-3xl font-bold">Search</h1>
-
-    <p class="mt-2 text-base-content/60">Search stories, authors, and ideas.</p>
-  </div>
-
-  <!-- Search Form -->
-
-  <div class="card border border-base-300 bg-base-100 shadow-sm">
-    <div class="card-body">
-      <form method="post" class="flex flex-col gap-4 md:flex-row">
-        <label for="search" class="sr-only"> Search </label>
-
-        <div class="relative flex-1">
-          <i
-            class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-base-content/40"
-          >
-          </i>
-
-          <input
-            id="search"
-            type="text"
-            name="query"
-            value="{{ query }}"
-            placeholder="Search your thoughts..."
-            class="input input-bordered w-full pl-11"
-          />
-        </div>
-
-        <button type="submit" class="btn btn-primary">
-          <i class="fa-solid fa-search"></i>
-
-          Search
-        </button>
-      </form>
-    </div>
-  </div>
-
-  {% if query %}
-
-  <!-- Results Header -->
-
-  <div
-    class="mt-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
-  >
-    <div>
-      <h2 class="text-xl font-semibold">
-        Results for
-        <span class="text-primary">"{{ query }}"</span>
-      </h2>
-
-      <p class="mt-1 text-sm text-base-content/60">
-        Searching for <span class="font-medium">stories</span>
-      </p>
-    </div>
-
-    <div class="flex items-center gap-2">
-      <label class="text-sm text-base-content/60"> Search in </label>
-
-      <select class="select select-bordered select-sm w-36">
-        <option selected>Stories</option>
-        <option>People</option>
-      </select>
-    </div>
-  </div>
-
-  <!-- Results -->
-
-  {% for story in results %}
+  {% for story in stories %}
   <article
     class="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm hover:border-primary transition cursor-pointer mt-2"
   >
@@ -159,7 +91,6 @@
       </div>
     </div>
   </article>
-  {% endfor %} {% endif %}
+  {% endfor %}
 </div>
-
 {% endblock %}

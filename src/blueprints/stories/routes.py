@@ -37,11 +37,7 @@ def story(story_uid=None, slug=None):
     # Update views
 
     check_story.views = check_story.views or +1
-    # db.session.execute(
-    #     db.update(Story)
-    #     .where(Story.id == check_story.id)
-    #     .values(views=Story.views or 0 + 1)
-    # )
+
     db.session.commit()
 
     like_count = (
@@ -162,8 +158,6 @@ def story(story_uid=None, slug=None):
         for comment in comments
     ]
 
-    [print(comment) for comment in comments]
-
     # comments method
     if request.method == "POST":
         if not session_user_id:
@@ -172,7 +166,7 @@ def story(story_uid=None, slug=None):
         commentsdb = Comments(story_id=story.id, user_id=session_user_id, body=comment)
         db.session.add(commentsdb)
         db.session.commit()
-        return redirect("/")
+        return redirect(url_for("stories.story", story_uid=story_uid, slug=new_slug))
     return render_template("stories.html", story=_story, comments=_comments)
 
 
@@ -184,7 +178,6 @@ def create():
         return redirect(url_for("users.login"))
     if request.method == "POST":
         form = request.form
-        print(form)
         title = form["title"]
         body = form["body"]
         desc = form["desc"]
@@ -213,6 +206,7 @@ def create():
 
         db.session.add(new_post)
         db.session.commit()
+        flash("Post created successfully", "success")
         return redirect(url_for("stories.story", story_uid=story_uid))
     return render_template("create.html")
 
@@ -225,10 +219,27 @@ def delete(story_id):
     story = db.session.execute(db.select(Story).filter_by(id=story_id)).scalar()
     if not story:
         return redirect(url_for("index.index"))
-
+    if story.user_id != session_user_id:
+        abort(404)
     db.session.delete(story)
     db.session.commit()
-    flash("post deleted")
+    flash("post deleted", "success")
+    return redirect(url_for("index.index"))
+
+
+@stories.route("/<int:story_id>/edit", methods=["GET", "POST"])
+def edit(story_id):
+    session_user_id = session.get("id")
+    if not session_user_id:
+        return redirect(url_for("users.login"), 401)
+    story = db.session.execute(db.select(Story).filter_by(id=story_id)).scalar()
+    if not story:
+        return redirect(url_for("index.index"))
+    if story.user_id != session_user_id:
+        abort(404)
+    db.session.delete(story)
+    db.session.commit()
+    flash("post deleted", "success")
     return redirect(url_for("index.index"))
 
 
@@ -246,12 +257,12 @@ def like(story_id):
             user_id=session_user_id,
         )
     ).scalar()
-    print(like, "like tesing")
+
     if not like:
         new_like = Like(user_id=session_user_id, story_id=story_id, like=1)
         db.session.add(new_like)
         db.session.commit()
-        flash("Post liked")
+        flash("Post liked", "success")
     else:
         # If dislike already exist then make to like
         if like.like == 0:
@@ -261,7 +272,7 @@ def like(story_id):
             # Delete entire row
             db.session.delete(like)
             db.session.commit()
-        flash("Like removed")
+        flash("Like removed", "success")
     return redirect(
         url_for(
             "stories.story",
@@ -290,7 +301,7 @@ def dislike(story_id):
         new_like = Like(user_id=session_user_id, story_id=story_id, like=0)
         db.session.add(new_like)
         db.session.commit()
-        flash("Post disliked")
+        flash("Post disliked", "success")
     else:
         # If like already exist then make to dislike
         if like.like == 1:
@@ -300,7 +311,7 @@ def dislike(story_id):
             # Delete entire row
             db.session.delete(like)
             db.session.commit()
-        flash("Dislike removed")
+        flash("Dislike removed", "success")
     return redirect(
         url_for(
             "stories.story",
@@ -328,7 +339,7 @@ def bookmark(story_id):
         new_bookmark = Bookmark(user_id=session_user_id, story_id=story_id)
         db.session.add(new_bookmark)
         db.session.commit()
-        flash("Post Bookmarked")
+        flash("Post saved", "success")
     return redirect(
         url_for(
             "stories.story",
@@ -355,7 +366,7 @@ def remove_bookmark(story_id):
     if bookmark:
         db.delete(bookmark)
         db.session.commit()
-        flash("Bookmark removed")
+        flash("Post unsaved", "success")
     return redirect(
         url_for(
             "stories.story",
@@ -374,3 +385,73 @@ def banner(story_id):
     banner = BytesIO(banner_data)
 
     return send_file(banner, mimetype="image/png")
+
+
+@stories.route("/<string:story_uid>/<int:comment_id>/delete", methods=["POST"])
+def delete_comment(story_uid, comment_id):
+    session_user_id = session.get("id")
+    if not session_user_id:
+        abort(404)
+    db.session.execute(
+        db.delete(Comments).where(
+            Comments.id == comment_id, Comments.user_id == session_user_id
+        )
+    )
+    db.session.commit()
+    flash("Comment deleted successfully", "success")
+    return redirect(url_for("stories.story", story_uid=story_uid))
+
+
+@stories.route("/<string:story_uid>/edit", methods=["GET", "POST"])
+@stories.route("/<string:slug>-<string:story_uid>/edit", methods=["GET", "POST"])
+def edit_story(story_uid, slug=None):
+    session_user_id = session.get("id")
+    if not session_user_id:
+        return redirect(url_for("users.login"), 401)
+    story = db.session.execute(
+        db.select(
+            Story.id, Story.title, Story.desc, Story.tags, Story.body, Story.user_id
+        ).filter_by(story_uid=story_uid)
+    ).first()
+    if not story:
+        return redirect(url_for("index.index"))
+    if story.user_id != session_user_id:
+        abort(404)
+
+    if request.method == "POST":
+        form = request.form
+        title = form.get("title")
+        body = form.get("body")
+        desc = form.get("desc")
+        tags = form.get("tags")
+
+        update_obj = {}
+        if story.title != title:
+            update_obj["title"] = title
+        if story.body != body:
+            update_obj["body"] = body
+        if story.desc != desc:
+            update_obj["desc"] = desc
+        if story.tags != tags:
+            update_obj["tags"] = tags
+        if not update_obj:
+            flash("Nothing to update", "warning")
+            return redirect(url_for("stories.edit_story", story_uid=story_uid))
+        if "banner" in request.files:
+            banner = request.files.get("banner")
+            update_obj["banner"] = banner.stream.read()
+
+        # update the story
+        db.session.execute(
+            db.update(Story).where(Story.story_uid == story_uid).values(**update_obj)
+        )
+        db.session.commit()
+        flash("Post updated successfully", "success")
+        return redirect(
+            url_for(
+                "stories.story",
+                story_uid=story_uid,
+                slug=generate_slug_from_title(title),
+            )
+        )
+    return render_template("edit.html", story=story._mapping)

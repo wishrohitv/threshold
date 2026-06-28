@@ -1,0 +1,201 @@
+{% extends "base.html" %} {% block title %} Edit Story {% endblock %} {% block
+head %}
+
+<link
+  href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css"
+  rel="stylesheet"
+/>
+
+{% endblock %} {% block body %}
+
+<div class="mx-auto max-w-5xl px-4 py-10">
+  <!-- Heading -->
+
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold">Edit Story</h1>
+
+    <p class="mt-2 text-base-content/60">
+      Update your story and keep it fresh.
+    </p>
+  </div>
+
+  <div class="card border border-base-300 bg-base-100 shadow-sm">
+    <div class="card-body">
+      <form
+        id="story-form"
+        method="POST"
+        enctype="multipart/form-data"
+        class="space-y-6"
+      >
+        <!-- Title -->
+
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text font-medium"> Story Title </span>
+          </label>
+
+          <input
+            type="text"
+            name="title"
+            class="input input-bordered"
+            value="{{story.title}}"
+            placeholder="Enter story title"
+          />
+        </div>
+
+        <!-- Description -->
+
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text font-medium"> Short Description </span>
+          </label>
+
+          <textarea
+            name="desc"
+            class="textarea textarea-bordered"
+            rows="3"
+            placeholder="Write a short summary..."
+          >
+{{story.desc}}</textarea
+          >
+        </div>
+
+        <!-- Tags -->
+        <div class="form-control mb-6">
+          <label class="label">
+            <span class="label-text font-semibold"> Story Tags </span>
+          </label>
+
+          <input
+            type="text"
+            name="tags"
+            value="{{story.tags}}"
+            placeholder="Python,flask (Comma seperated)"
+            class="input input-bordered input-lg w-full"
+            required
+            minlength="4"
+            maxlength="50"
+          />
+        </div>
+
+        <!-- Banner -->
+
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text font-medium"> Story Banner </span>
+          </label>
+
+          <img
+            id="banner-preview"
+            src="{{url_for('stories.banner', story_id=story.id)}}"
+            class="mb-4 h-64 w-full rounded-xl border border-base-300 object-cover"
+          />
+
+          <input
+            id="banner"
+            name="banner"
+            type="file"
+            accept="image/*"
+            class="file-input file-input-bordered"
+          />
+
+          <label class="label">
+            <span class="label-text-alt"> Recommended: 1200 x 600 </span>
+          </label>
+        </div>
+
+        <!-- Story -->
+
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text font-medium"> Story Content </span>
+          </label>
+
+          <input id="body" name="body" type="hidden" />
+
+          <div
+            id="editor"
+            class="min-h-[420px] rounded-lg border border-base-300 bg-base-100"
+          ></div>
+        </div>
+
+        <!-- Buttons -->
+
+        <div class="divider"></div>
+
+        <div class="flex flex-wrap justify-between gap-3">
+          <form
+            action="{{url_for('stories.delete', story_id=story.id)}}"
+            ,
+            method="post"
+          >
+            <button class="btn btn-error btn-outline" , type="submit">
+              <i class="fa-solid fa-trash"></i>
+
+              Delete Story
+            </button>
+          </form>
+
+          <div class="flex gap-3">
+            <button type="button" class="btn btn-ghost">Cancel</button>
+
+            <button type="submit" class="btn btn-primary">
+              <i class="fa-solid fa-floppy-disk"></i>
+
+              Save Changes
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+
+<script>
+  const quill = new Quill("#editor", {
+    theme: "snow",
+
+    modules: {
+      toolbar: [
+        [{ header: [1, 2, 3, false] }],
+
+        ["bold", "italic", "underline"],
+
+        ["blockquote"],
+
+        [{ list: "ordered" }, { list: "bullet" }],
+
+        [{ script: "sub" }, { script: "super" }],
+
+        [{ indent: "-1" }, { indent: "+1" }],
+
+        [{ color: [] }, { background: [] }],
+
+        [{ align: [] }],
+
+        ["link", "image"],
+
+        ["clean"],
+      ],
+    },
+  });
+
+  // Existing story body
+  quill.clipboard.dangerouslyPasteHTML({{ story.body | tojson }});
+
+  document.getElementById("banner").addEventListener("change", function () {
+    const file = this.files[0];
+
+    if (!file) return;
+
+    document.getElementById("banner-preview").src = URL.createObjectURL(file);
+  });
+
+  document.getElementById("story-form").addEventListener("submit", () => {
+    document.getElementById("body").value = quill.root.innerHTML;
+  });
+</script>
+
+{% endblock %}

@@ -1,0 +1,143 @@
+{% extends "base.html" %} {% block title %} {{user.username}} | Edit Profile {%
+endblock %} {% block body %}
+
+<div class="mx-auto max-w-3xl px-4 pb-10 pt-4">
+  <!-- Heading -->
+
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold">Edit Profile</h1>
+
+    <p class="mt-2 text-base-content/60">
+      Update your personal information and profile details.
+    </p>
+  </div>
+
+  <div class="card border border-base-300 bg-base-100 shadow-sm">
+    <div class="card-body">
+      <form method="POST" enctype="multipart/form-data" class="space-y-6">
+        <!-- Avatar -->
+
+        <div class="flex flex-col items-center gap-4">
+          <div class="avatar">
+            <div class="w-28 rounded-full border border-base-300">
+              <img
+                id="avatar-preview"
+                src="{{ url_for('users.avatar', user_id=user.id) }}"
+                alt="Profile"
+              />
+            </div>
+          </div>
+
+          <input
+            id="avatar"
+            name="avatar"
+            type="file"
+            accept="image/*"
+            class="file-input file-input-bordered file-input-sm max-w-xs"
+          />
+
+          <p class="text-xs text-base-content/60">
+            JPG, PNG or WEBP. Maximum size 5 MB.
+          </p>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Display Name -->
+
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text font-medium"> Display Name </span>
+          </label>
+
+          <input
+            name="name"
+            type="text"
+            class="input input-bordered"
+            placeholder="John Doe"
+            value="{{user.name}}"
+          />
+        </div>
+
+        <!-- Username -->
+
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text font-medium"> Username </span>
+          </label>
+
+          <input
+            name="username"
+            type="text"
+            class="input input-bordered"
+            placeholder="rohit"
+            value="{{user.username}}"
+          />
+        </div>
+
+        <!-- Bio -->
+
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text font-medium"> Bio </span>
+          </label>
+
+          <textarea
+            name="bio"
+            rows="5"
+            class="textarea textarea-bordered"
+            placeholder="Tell readers about yourself..."
+          >
+{{'Full-stack developer passionate about Flask and Python. 'if not user.bio else user.bio}}</textarea
+          >
+
+          <label class="label">
+            <span class="label-text-alt"> Keep it under 200 characters. </span>
+          </label>
+        </div>
+
+        <!-- Website -->
+
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text font-medium"> Website </span>
+          </label>
+
+          <input
+            type="website"
+            class="input input-bordered"
+            placeholder="https://yourwebsite.com"
+            value="{{user.website}}"
+          />
+        </div>
+
+        <!-- Buttons -->
+
+        <div class="flex flex-wrap justify-end gap-3 pt-4">
+          <button onclick="history.back()" type="button" class="btn btn-ghost">Cancel</button>
+
+          <button type="submit" class="btn btn-primary">
+            <i class="fa-solid fa-floppy-disk"></i>
+
+            Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  const input = document.getElementById("avatar");
+  const preview = document.getElementById("avatar-preview");
+
+  input.addEventListener("change", function () {
+    const file = this.files[0];
+
+    if (!file) return;
+
+    preview.src = URL.createObjectURL(file);
+  });
+</script>
+
+{% endblock %}

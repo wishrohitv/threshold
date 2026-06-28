@@ -1,0 +1,16 @@
+{% extends "base.html" %} {% block title %} All Comments {% endblock %} {% block
+body %}
+<div class="max-w-4xl mx-auto px-4 py-10">
+<h1 class="text-3xl font-bold">All Comments</h1>
+    {% for comment in comments %}
+    <article class="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm">
+      <a
+        href="{{url_for('stories.story', story_uid=comment.story_uid)}}"
+        class="text-lg font-semibold hover:text-primary"
+        >{{comment.body}}</a
+      >
+    
+      <p class="mt-2 text-base-content/70">{{comment.story_title}}</p>
+    </article>
+</div>
+{% endfor %} {% endblock %}

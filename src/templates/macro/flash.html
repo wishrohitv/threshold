@@ -1,0 +1,39 @@
+{% macro flash() %}
+<div class="toast toast-end toast-bottom z-50">
+  {% with messages = get_flashed_messages(with_categories=true) %} {% if
+  messages %} {% for category, message in messages %}
+  <div
+    role="alert"
+    class="alert {% if category == 'success' %}alert-success{% else %}alert-error{% endif %} alert-soft shadow-lg animate-[slideIn_0.3s_ease-out,fadeOut_0.5s_ease-in_3.5s_forwards]"
+  >
+    {% if category == 'success' %}
+    <i class="fa-solid fa-circle-check" style="color: rgb(54, 255, 0);"></i>
+    {% else %}
+    <i class="fa-solid fa-x" style="color: rgb(255, 0, 0);"></i>
+    {% endif %}
+    <span>{{ message }}</span>
+  </div>
+  {% endfor %} {% endif %} {% endwith %}
+</div>
+<style>
+  @keyframes slideIn {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  @keyframes fadeOut {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+</style>
+{% endmacro %}

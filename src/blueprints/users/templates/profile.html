@@ -1,7 +1,7 @@
 {% extends "base.html" %} {% block title %} {{user.username}} | Threshold {%
 endblock %} {% block body %}
 
-<div class="mx-auto max-w-5xl px-4 py-8">
+<div class="mx-auto max-w-5xl px-4 pb-8 pt-2">
   <div class="card border border-base-300 bg-base-100 shadow-sm">
     <div class="card-body">
       <!-- Profile Header -->
@@ -81,18 +81,40 @@ endblock %} {% block body %}
 
           View Comments
         </a>
+        {% if session.get("id") %}
+        <a
+          href="{{url_for('users.profile',username=user.username, tab='saved')}}"
+          class="btn {{ 'btn-primary' if tab == 'saved' else 'btn-outline' }}"
+        >
+          <i class="fa-solid fa-bookmark"></i>
 
-        <button class="btn btn-outline">
+          View Saved Posts
+        </a>
+
+        <a
+          href="{{url_for('users.edit_profile', username=user.username)}}"
+          class="btn btn-error btn-outline"
+        >
           <i class="fa-solid fa-user-pen"></i>
 
           Edit Profile
-        </button>
+        </a>
+        <a
+          href="{{url_for('users.change_password', username=user.username)}}"
+          class="btn btn-error btn-outline"
+        >
+          <i class="fa-solid fa-key"></i>
 
-        <button class="btn btn-error btn-outline">
-          <i class="fa-solid fa-ban"></i>
+          Change Password
+        </a>
+        <form action="{{url_for('users.delete_account')}}" , method="post">
+          <button class="btn btn-error" , type="submit">
+            <i class="fa-solid fa-trash"></i>
 
-          Block User
-        </button>
+            Delete Account
+          </button>
+        </form>
+        {% endif %}
       </div>
     </div>
   </div>
@@ -102,58 +124,218 @@ endblock %} {% block body %}
   <div class="mt-8">
     <div class="mb-4 flex items-center justify-between">
       <h2 class="text-xl font-semibold">
-        {{'Recent Stories' if tab=='post' else 'Recent Comments'}}
+        {% if post!="saved" %} {{'Recent Stories' if tab=='post' else 'Recent
+        Comments'}} {% else %} {{'Saved Stories'}} {% endif %}
       </h2>
 
-      <button class="btn btn-sm btn-ghost">View All</button>
+      <a
+        href="{% if tab=='post' %}{{url_for('users.users_all_stories', username=user.username)}}{% elif tab=='comment' %}{{url_for('users.users_all_comments', username=user.username)}} {% else %}{{url_for('users.users_all_saved_stories', username=user.username)}}{% endif %}"
+        class="btn btn-sm btn-ghost"
+        >View All</a
+      >
     </div>
 
     <div class="space-y-4">
       <!-- When tab is post -->
       {% if tab=='post' %} {% for story in stories %}
       <article
-        class="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm"
+        class="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm hover:border-primary transition cursor-pointer mt-2"
       >
-        <h3 class="text-lg font-semibold">{{story.title}}</h3>
+        <div class="flex flex-col gap-5 md:flex-row">
+          <!-- Left Content -->
+          <div class="flex-1">
+            <!-- Author -->
 
-        <p class="mt-2 text-base-content/70">{{story.desc}}</p>
+            <div class="mb-4 flex items-center gap-3">
+              <img
+                src="{{ url_for('users.avatar', user_id=story.user_id) }}"
+                alt="{{ story.username }}"
+                class="h-10 w-10 rounded-full object-cover"
+              />
 
-        <div class="mt-4 flex flex-wrap gap-5 text-sm text-base-content/60">
-          <span>
-            <i class="fa-solid fa-eye mr-1"></i>
+              <div class="flex-1">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <a
+                    href="{{url_for('users.profile', username=story.username)}}"
+                    class="font-medium hover:text-primary"
+                  >
+                    {{ story.name }}
+                  </a>
 
-            {{story.views_count}}
-          </span>
+                  <span class="text-base-content/40">•</span>
 
-          <span>
-            <i class="fa-solid fa-thumbs-up mr-1"></i>
+                  <span class="text-sm text-base-content/60">
+                    @{{ story.username }}
+                  </span>
 
-            {{story.like_count}}
-          </span>
+                  <span class="text-base-content/40">•</span>
 
-          <span>
-            <i class="fa-solid fa-comment mr-1"></i>
+                  <span class="text-sm text-base-content/60">
+                    <i class="fa-regular fa-calendar mr-1"></i>
 
-            {{story.comment_count}}
-          </span>
+                    {{story.date_created}}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Story -->
+
+            <a
+              href="{{url_for('stories.story', story_uid=story['story_uid'],  slug=generate_slug_from_title(story['title']))}}"
+              class="text-xl font-semibold hover:text-primary transition"
+            >
+              {{ story.title }}
+            </a>
+
+            <p class="mt-2 line-clamp-3 text-base-content/70">
+              {{ story.desc }}
+            </p>
+
+            <!-- Footer -->
+
+            <div
+              class="mt-5 flex flex-wrap items-center gap-5 text-sm text-base-content/60"
+            >
+              <span>
+                <i class="fa-regular fa-eye mr-1"></i>
+                {{story.views_count}}
+              </span>
+
+              <span>
+                <i class="fa-regular fa-thumbs-up mr-1"></i>
+                {{story.like_count}}
+              </span>
+
+              <span>
+                <i class="fa-regular fa-comment mr-1"></i>
+                {{story.comment_count}}
+              </span>
+            </div>
+          </div>
+
+          <!-- Banner -->
+
+          <div
+            class="md:w-56 md:h-36 w-full h-48 shrink-0 overflow-hidden rounded-xl"
+          >
+            <img
+              src="{{ url_for('stories.banner', story_id=story.id) }}"
+              alt="{{ story.title }}"
+              class="h-full w-full object-cover"
+            />
+          </div>
         </div>
       </article>
       {% endfor %}
 
       <!-- When tab is comments -->
-      {% else %}
-      {% for comment in comments %}
+      {% elif tab == 'comment' %} {% for comment in comments %}
       <article
         class="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm"
       >
-        <h3 class="text-lg font-semibold">{{comment.body}}</h3>
+        <a
+          href="{{url_for('stories.story', story_uid=comment.story_uid)}}"
+          class="text-lg font-semibold hover:text-primary"
+          >{{comment.body}}</a
+        >
 
-        <p class="mt-2 text-base-content/70">
-          {{comment.story_title}}
-        </p>
+        <p class="mt-2 text-base-content/70">{{comment.story_title}}</p>
       </article>
       {% endfor %}
-      {% endif %}
+
+      <!-- When tab is saved -->
+      {% elif tab=='saved' %} {% for story in saved_stories %}
+      <article
+        class="rounded-xl border border-base-300 bg-base-100 p-5 shadow-sm hover:border-primary transition cursor-pointer mt-2"
+      >
+        <div class="flex flex-col gap-5 md:flex-row">
+          <!-- Left Content -->
+          <div class="flex-1">
+            <!-- Author -->
+
+            <div class="mb-4 flex items-center gap-3">
+              <img
+                src="{{ url_for('users.avatar', user_id=story.user_id) }}"
+                alt="{{ story.username }}"
+                class="h-10 w-10 rounded-full object-cover"
+              />
+
+              <div class="flex-1">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <a
+                    href="{{url_for('users.profile', username=story.username)}}"
+                    class="font-medium hover:text-primary"
+                  >
+                    {{ story.name }}
+                  </a>
+
+                  <span class="text-base-content/40">•</span>
+
+                  <span class="text-sm text-base-content/60">
+                    @{{ story.username }}
+                  </span>
+
+                  <span class="text-base-content/40">•</span>
+
+                  <span class="text-sm text-base-content/60">
+                    <i class="fa-regular fa-calendar mr-1"></i>
+
+                    {{story.date_created}}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Story -->
+
+            <a
+              href="{{url_for('stories.story', story_uid=story['story_uid'],  slug=generate_slug_from_title(story['title']))}}"
+              class="text-xl font-semibold hover:text-primary transition"
+            >
+              {{ story.title }}
+            </a>
+
+            <p class="mt-2 line-clamp-3 text-base-content/70">
+              {{ story.desc }}
+            </p>
+
+            <!-- Footer -->
+
+            <div
+              class="mt-5 flex flex-wrap items-center gap-5 text-sm text-base-content/60"
+            >
+              <span>
+                <i class="fa-regular fa-eye mr-1"></i>
+                {{story.views_count}}
+              </span>
+
+              <span>
+                <i class="fa-regular fa-thumbs-up mr-1"></i>
+                {{story.like_count}}
+              </span>
+
+              <span>
+                <i class="fa-regular fa-comment mr-1"></i>
+                {{story.comment_count}}
+              </span>
+            </div>
+          </div>
+
+          <!-- Banner -->
+
+          <div
+            class="md:w-56 md:h-36 w-full h-48 shrink-0 overflow-hidden rounded-xl"
+          >
+            <img
+              src="{{ url_for('stories.banner', story_id=story.id) }}"
+              alt="{{ story.title }}"
+              class="h-full w-full object-cover"
+            />
+          </div>
+        </div>
+      </article>
+      {% endfor %} {% else %}{% endif %}
     </div>
   </div>
 </div>
