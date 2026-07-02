@@ -1,0 +1,36 @@
+# Virtual environment - biggest offender, often 300-500MB
+.venv/
+venv/
+env/
+
+# Git history
+.git/
+.gitignore
+
+# Python cache
+__pycache__/
+**/__pycache__/
+**/migrations/
+*.py[cod]
+*.pyo
+*.pyd
+.ruff_cache/
+
+# IDE files
+.idea/
+.vscode/
+
+# Local database (use a real DB service in production)
+# instance/
+
+# Docs and non-runtime files
+docs/
+README.md
+
+# Secrets - never bake these into the image
+.env
+client_secret.json
+
+# OS noise
+.DS_Store
+Thumbs.db

@@ -1,11 +1,13 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from secrets import token_hex
+from settings import Settings
+from werkzeug.middleware.proxy_fix import ProxyFix
 import os
 
-# Allow insecure HTTP connections for local testing
-os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
+if Settings.DEBUG_MODE:
+    # Allow insecure HTTP connections for local testing
+    os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
 from .utils.error_handler.page_not_found import return_404_page
 from .utils.context_processors.return_story_slug import return_story_slug
@@ -15,8 +17,16 @@ db = SQLAlchemy()
 
 def create_app():
     app = Flask(__name__, template_folder="templates")
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///blog_data.db"
-    app.config["SECRET_KEY"] = token_hex(64)
+
+    # Tell Flask to read X-Forwarded-Proto from Railway's proxy
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
+
+    app.config["SQLALCHEMY_DATABASE_URI"] = Settings.DATABASE_URI
+    app.config["SECRET_KEY"] = Settings.SECRET_KEY
+
+    # Keep these to ensure the cookie survives the OAuth redirect
+    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+    app.config['SESSION_COOKIE_SECURE'] = True
 
     db.init_app(app)
 

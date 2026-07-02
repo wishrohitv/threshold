@@ -12,7 +12,9 @@ class Story(db.Model):
     desc = db.Column(db.VARCHAR(200), nullable=False)
     body = db.Column(db.TEXT, nullable=False)
     date_created = db.Column(db.DateTime, default=datetime.now)
-    last_edited = db.Column(db.DateTime, nullable=True, default=datetime.now)
+    last_edited = db.Column(
+        db.DateTime, nullable=True, default=datetime.now, onupdate=datetime.now
+    )
     comments = db.relationship(
         "Comments", backref="story", lazy=True, cascade="all, delete-orphan"
     )

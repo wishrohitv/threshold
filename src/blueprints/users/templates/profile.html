@@ -81,7 +81,7 @@ endblock %} {% block body %}
 
           View Comments
         </a>
-        {% if session.get("id") %}
+        {% if session.get("id")==user.id %}
         <a
           href="{{url_for('users.profile',username=user.username, tab='saved')}}"
           class="btn {{ 'btn-primary' if tab == 'saved' else 'btn-outline' }}"
@@ -107,6 +107,13 @@ endblock %} {% block body %}
 
           Change Password
         </a>
+        <form action="{{url_for('users.logout')}}" , method="post">
+          <button class="btn btn-error" , type="submit">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+
+            Logout
+          </button>
+        </form>
         <form action="{{url_for('users.delete_account')}}" , method="post">
           <button class="btn btn-error" , type="submit">
             <i class="fa-solid fa-trash"></i>

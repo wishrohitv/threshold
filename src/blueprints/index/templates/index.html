@@ -1,7 +1,30 @@
 {% extends "base.html" %} {% block body %}
-<div class="max-w-6xl mx-auto px-4 pb-10 pt-4">
-  <h1 class="text-3xl font-bold m-4">Stories</h1>
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+<div class="max-w-6xl mx-auto px-4 pb-10 pt-2">
+  <div class="flex gap-4 flex-row items-center justify-between">
+    <h1 class="text-3xl font-bold m-4">Stories</h1>
+
+    <div class="flex items-center gap-2">
+      <label class="text-sm text-base-content/60"> Sort by </label>
+      <div class="dropdown">
+        <div tabindex="0" role="button" class="btn m-1">{{sort_by}}</div>
+        <ul
+          tabindex="0"
+          class="dropdown-content menu bg-base-100 rounded-box z-[1] w-30 p-2 shadow"
+        >
+          <li>
+            <a href="{{url_for('index.index', sort_by='popular')}}">Populer</a>
+          </li>
+          <li>
+            <a href="{{url_for('index.index', sort_by='latest')}}">Latest</a>
+          </li>
+          <li><a href="{{url_for('index.index', sort_by='old')}}">Old</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stories -->
+  <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
     {% for story in stories %} {% from "macro/post_card.html" import post_card
     with context %} {{ post_card(story) }} {% endfor %}
   </div>

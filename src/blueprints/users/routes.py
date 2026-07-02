@@ -10,6 +10,7 @@ from flask import (
     abort,
 )
 import requests
+import random, os
 from sqlalchemy.sql.elements import or_
 from passlib.hash import sha256_crypt as encryption
 from io import BytesIO
@@ -17,20 +18,47 @@ from src.app import db
 from .models import User
 from src.blueprints.stories.models import Story, Comments, Bookmark, Like
 
+import json
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
 from googleapiclient.discovery import build
 
 users = Blueprint("users", __name__, template_folder="templates")
 
-scopes = [
+OAUTH_SCOPES = [
     "openid",
     "https://www.googleapis.com/auth/userinfo.email",
     "https://www.googleapis.com/auth/userinfo.profile",
 ]
-flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-    "/home/wishrohitv/PycharmProjects/threshold/client_secret.json", scopes=scopes
-)
+
+flow = None
+
+
+def _get_flow():
+    """Build the OAuth flow from the GOOGLE_CLIENT_SECRET env var (production)
+    or from client_secret.json on disk (local dev).
+    """
+    client_secret_path = f"{os.getcwd()}/client_secret.json"
+
+    if os.path.exists(client_secret_path):
+        # Local dev — use the file directly
+        return google_auth_oauthlib.flow.Flow.from_client_secrets_file(
+            client_secret_path, scopes=OAUTH_SCOPES
+        )
+
+    # Production — load JSON from env var, no temp file needed
+    secret_json = os.environ.get("GOOGLE_CLIENT_SECRET")
+
+    if not secret_json:
+        raise RuntimeError(
+            "Google OAuth is not configured. "
+            "Set the GOOGLE_CLIENT_SECRET environment variable "
+            "to the contents of client_secret.json."
+        )
+    client_config = json.loads(secret_json)
+    return google_auth_oauthlib.flow.Flow.from_client_config(
+        client_config, scopes=OAUTH_SCOPES
+    )
 
 
 @users.route("/signup", methods=["GET", "POST"])
@@ -43,7 +71,7 @@ def signup():
         password = form.get("password")
         confirm_password = form.get("confirm_password")
         avatar = request.files.get("avatar")
-        term = form.get("term")
+        terms = form.get("terms")
 
         # Check if user with username or email exist or not
         is_user: User | None = db.session.execute(
@@ -54,7 +82,7 @@ def signup():
             flash("User with already exists with this username or email", "denger")
             return redirect(url_for("users.signup"))
 
-        if term != "on":
+        if terms != "on":
             flash("Please accept our terms conditions", "denger")
 
         hashed_password = encryption.hash(password)
@@ -68,7 +96,7 @@ def signup():
         db.session.add(user)
         db.session.commit()
         flash("Account created successfully!", "success")
-        return redirect(url_for("users.login"))
+        return redirect(url_for("users.login", email=email))
     return render_template("signup.html")
 
 
@@ -79,11 +107,11 @@ def login():
         email = form.get("email")
         password = form.get("password")
 
-        user = db.session.execute(db.select(User).filter_by(email=email)).scalar()
-
+        user = db.session.execute(db.select(User).filter(User.email == email)).scalar()
+        print(user, email)
         if not user:
             flash("User not found", "denger")
-            return redirect(url_for("users.login")), 404
+            return redirect(url_for("users.login"))
 
         # match password
         is_match = encryption.verify(password, user.password)
@@ -278,6 +306,10 @@ def avatar(user_id):
 
 @users.route("/oauth/gogole")
 def google_oauth():
+    global flow
+    if not flow:
+        flow = _get_flow()
+
     flow.redirect_uri = f"{request.url_root}users/oauth/google/callback"
     authorization_url, state = flow.authorization_url(
         # Recommended, enable offline access so that you can refresh an access token without
@@ -293,6 +325,9 @@ def google_oauth():
 
 @users.route("/oauth/google/callback")
 def google_oauth_callback():
+    global flow
+    if not flow:
+        flow = _get_flow()
     flow.redirect_uri = f"{request.url_root}users/oauth/google/callback"
     state = session.get("state")
 
@@ -510,3 +545,10 @@ def users_all_saved_stories(username):
         .order_by(Story.date_created.desc())
     ).all()
     return render_template("user_all_saved_stories .html", saved_stories=saved_stories)
+
+
+@users.route("/logout", methods=["POST"])
+def logout():
+    if session.get("id"):
+        session.clear()
+    return redirect(url_for("index.index"))

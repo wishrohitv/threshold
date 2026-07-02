@@ -6,3 +6,4 @@
 **/migrations/
 client_secret.json
 .ruff_cache
+.env

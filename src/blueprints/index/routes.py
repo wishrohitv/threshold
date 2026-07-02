@@ -1,4 +1,4 @@
-from flask import request, render_template, redirect, url_for, Blueprint, session
+from flask import request, render_template, redirect, url_for, Blueprint, session, abort
 from sqlalchemy import literal
 from src.app import db
 from src.blueprints.stories.models import Story, Like, Comments, Bookmark
@@ -10,6 +10,19 @@ index_bp = Blueprint("index", __name__, template_folder="templates")
 @index_bp.route("/")
 def index():
     session_user_id = session.get("id")
+
+    sort_by = request.args.get("sort_by", "latest")
+    if sort_by not in ["latest", "old", "popular"]:
+        abort(404)
+
+    _filter = []
+    if sort_by == "latest":
+        _filter.append(Story.date_created.desc())
+    if sort_by == "old":
+        _filter.append(Story.date_created.asc())
+    if sort_by == "popular":
+        _filter.append(Story.views.desc())
+
     like_count = (
         db.select(db.func.count(Like.id))
         .where(Like.story_id == Story.id, Like.like == 1)
@@ -65,7 +78,9 @@ def index():
             bookmark_count.label("bookmark_count"),
             comment_count.label("comment_count"),
             is_bookmarked.label("is_bookmarked"),
-        ).join(User)
+        )
+        .join(User)
+        .order_by(*_filter)
     ).all()
 
     _stories = [
@@ -89,4 +104,6 @@ def index():
         for story in stories
     ]
 
-    return render_template("index.html", stories=_stories)
+    return render_template(
+        "index.html", stories=_stories, sort_by=f"{sort_by[0].upper()}{sort_by[1:]}"
+    )

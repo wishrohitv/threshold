@@ -24,7 +24,7 @@ stories = Blueprint("stories", __name__, template_folder="templates")
 def story(story_uid=None, slug=None):
     session_user_id = session.get("id")
     check_story = db.session.execute(
-        db.select(Story).filter_by(story_uid=story_uid)
+        db.select(Story).filter(Story.story_uid == story_uid)
     ).scalar()
 
     if not check_story:
@@ -36,7 +36,7 @@ def story(story_uid=None, slug=None):
         return redirect(url_for("stories.story", story_uid=story_uid, slug=new_slug))
     # Update views
 
-    check_story.views = check_story.views or +1
+    check_story.views = check_story.views + 1
 
     db.session.commit()
 
@@ -167,7 +167,7 @@ def story(story_uid=None, slug=None):
         db.session.add(commentsdb)
         db.session.commit()
         return redirect(url_for("stories.story", story_uid=story_uid, slug=new_slug))
-    return render_template("stories.html", story=_story, comments=_comments)
+    return render_template("story.html", story=_story, comments=_comments)
 
 
 @stories.route("/create", methods=["GET", "POST"])
@@ -362,9 +362,10 @@ def remove_bookmark(story_id):
             story_id=story_id,
             user_id=session_user_id,
         )
-    ).first()
+    ).scalar()
     if bookmark:
-        db.delete(bookmark)
+        # Delete the row
+        db.session.delete(bookmark)
         db.session.commit()
         flash("Post unsaved", "success")
     return redirect(
@@ -434,12 +435,13 @@ def edit_story(story_uid, slug=None):
             update_obj["desc"] = desc
         if story.tags != tags:
             update_obj["tags"] = tags
-        if not update_obj:
-            flash("Nothing to update", "warning")
-            return redirect(url_for("stories.edit_story", story_uid=story_uid))
         if "banner" in request.files:
             banner = request.files.get("banner")
             update_obj["banner"] = banner.stream.read()
+
+        if not update_obj:
+            flash("Nothing to update", "warning")
+            return redirect(url_for("stories.edit_story", story_uid=story_uid))
 
         # update the story
         db.session.execute(

@@ -1,9 +1,8 @@
 <div align="center">
-  <img src="src/static/icons/quill-pen-256.png" alt="Threshold logo" width="96" />
-
-# Threshold
-
+  <img src="src/static/icons/logo_title.png" alt="Threshold" height="120" />
 </div>
+
+
 
 A blogging platform built with Flask where users can write and share stories, engage through comments, likes, bookmarks, and discover content through search.
 
@@ -14,19 +13,29 @@ A blogging platform built with Flask where users can write and share stories, en
 - **Engagement** — like, dislike, bookmark, and comment on stories. Delete your own comments.
 - **Profiles** — view any user's posts, comments, and saved stories across three tabs, plus aggregate stats (post count, total likes, total views, comment count).
 - **Search** — find stories by title, description, or tags (case-insensitive).
+- **Feed sorting** — sort the home feed by latest, oldest, or most popular.
 - **SEO-friendly URLs** — story URLs include a human-readable slug auto-generated from the title.
 - **Google OAuth** — sign in or auto-register via Google. Accounts created through OAuth do not require a password.
+
+## Screenshots
+
+| | |
+|---|---|
+| ![Home feed](docs/screenshots/threshold-home.png) | ![Home feed alt](docs/screenshots/threshold-home1.png) |
+| ![Login](docs/screenshots/threshold-login.png) | ![Sign up](docs/screenshots/threshold-signup.png) |
+| ![Profile](docs/screenshots/threshold-profile.png) | |
 
 ## Tech Stack
 
 | Layer | Library |
 |---|---|
-| Framework | Flask 3.1.0 |
-| ORM | Flask-SQLAlchemy 3.1.1 / SQLAlchemy 2.0.36 |
-| Migrations | Flask-Migrate 4.0.7 / Alembic 1.14.0 |
+| Framework | Flask 3.1.3 |
+| ORM | Flask-SQLAlchemy 3.1.1 / SQLAlchemy 2.0.51 |
+| Migrations | Flask-Migrate 4.1.0 / Alembic 1.18.5 |
 | Auth | passlib 1.7.4 (SHA-256) + google-auth-oauthlib 1.4.0 |
-| Templating | Jinja2 3.1.4 |
-| Database | SQLite (dev) — `instance/blog_data.db` |
+| Templating | Jinja2 3.1.6 |
+| UI | Tailwind CSS + DaisyUI 4 |
+| Database | SQLite (dev) / PostgreSQL (prod) — `instance/blog_data.db` |
 | Env config | python-dotenv 1.2.2 |
 
 ## Project Structure
@@ -95,6 +104,51 @@ Starts at `http://localhost:5000` by default. Override host and port via environ
 HOST=127.0.0.1 PORT=8080 python run.py
 ```
 
+### Docker
+
+The image is published on Docker Hub at [wishrohitv/threshold](https://hub.docker.com/repository/docker/wishrohitv/threshold/general). You can pull and run it directly without building locally:
+
+```bash
+# Pull the image
+docker pull wishrohitv/threshold
+
+# Run the container
+docker run -p 3000:3000 wishrohitv/threshold
+```
+
+A `Dockerfile` is also included if you prefer to build the image yourself. It uses `python:3.11-slim` and runs the app on port **3000**.
+
+```bash
+# Build locally
+docker build -t threshold .
+
+# Run the container
+docker run -p 3000:3000 threshold
+```
+
+The app will be available at `http://localhost:3000`.
+
+Pass environment variables at runtime — never bake secrets into the image:
+
+```bash
+docker run -p 3000:3000 \
+  -e SECRET_KEY=your-secret \
+  -e DATABASE_URL=your-db-url \
+  wishrohitv/threshold
+```
+
+> Note: `client_secret.json` and `.env` are excluded via `.dockerignore`. Mount them as volumes or inject values via env vars in production.
+
+To pass the Google OAuth credentials file at runtime, mount it as a volume:
+
+```bash
+docker run -p 3000:3000 \
+  -v /path/to/your/client_secret.json:/src/client_secret.json \
+  wishrohitv/threshold
+```
+
+The `-v` flag maps your local file into `/src/client_secret.json` inside the container, which matches the `WORKDIR /src` where the app looks for it.
+
 ### Database Migrations
 
 ```bash
@@ -112,7 +166,7 @@ flask db upgrade
 
 | Method | Path | Description |
 |---|---|---|
-| GET | `/` | Home feed with all stories |
+| GET | `/` | Home feed (`?sort_by=latest\|old\|popular`) |
 
 ### Stories — prefix `/stories`
 
@@ -135,6 +189,7 @@ flask db upgrade
 |---|---|---|
 | GET/POST | `/signup` | Register with email and password |
 | GET/POST | `/login` | Log in |
+| POST | `/logout` | Log out |
 | GET | `/<username>` | Public profile (`?tab=post\|comment\|saved`) |
 | GET/POST | `/<username>/edit` | Edit your profile |
 | GET/POST | `/<username>/change-password` | Change password |
