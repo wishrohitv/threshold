@@ -11,7 +11,7 @@ class Settings:
     PORT = os.environ.get("PORT", 5000)
     HOST = os.environ.get("HOST", "0.0.0.0")
     DEBUG_MODE = os.environ.get("DEBUG_MODE", False)
-    SECRET_KEY = os.environ.get("SECRET_KEY")
+    SECRET_KEY = os.environ.get("SECRET_KEY", token_hex(64))
 
     DATABASE_URI = os.environ.get("DATABASE_URI", "sqlite:///blog_data.db")
 
