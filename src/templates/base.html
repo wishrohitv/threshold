@@ -29,7 +29,7 @@
 
     <nav class="navbar bg-base-100 border-b border-base-300 px-4 md:px-6">
       <!-- Left -->
-      <div class="navbar-start ml-4">
+      <div class="navbar-start sm:ml-4">
         <div class="dropdown">
           <div tabindex="0">
             <div
@@ -39,7 +39,7 @@
               <img
                 src="{{ url_for('static', filename='icons/logo_title.png') }}"
                 alt="Threshold"
-                class="h-12 object-contain"
+                class="h-8 sm:h-12 object-contain"
               />
 
               <!-- <span> Threshold </span> -->
@@ -75,7 +75,7 @@
       </div>
 
       <!-- Right -->
-      <div class="navbar-end gap-1">
+      <div class="navbar-end mr-2">
         <!-- Search -->
         <a href="{{url_for('search.search')}}" class="btn btn-ghost btn-circle">
           <i class="fa-solid fa-magnifying-glass"></i>
@@ -118,7 +118,7 @@
 
         {% else %}
 
-        <div class="flex items-center gap-2 ml-2">
+        <div class="flex items-center gap-2 mr-2">
           <a href="{{ url_for('users.login') }}" class="btn btn-ghost">
             Login
           </a>
