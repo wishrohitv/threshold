@@ -4,7 +4,7 @@
 
 
 
-A blogging platform built with Flask where users can write and share stories, engage through comments, likes, bookmarks, and discover content through search.
+A content publishing platform built with Flask where users can write and share stories, engage through comments, likes, bookmarks, and discover content through search.
 
 ## Features
 
