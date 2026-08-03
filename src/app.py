@@ -5,7 +5,7 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.middleware.proxy_fix import ProxyFix
 
-from settings import Settings
+from .settings import Settings
 
 if Settings.DEBUG_MODE:
     # Allow insecure HTTP connections for local testing
