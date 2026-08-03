@@ -1,27 +1,30 @@
-from flask import (
-    Blueprint,
-    render_template,
-    request,
-    redirect,
-    url_for,
-    flash,
-    session,
-    send_file,
-    abort,
-)
-import requests
-import random, os
-from sqlalchemy.sql.elements import or_
-from passlib.hash import sha256_crypt as encryption
-from io import BytesIO
-from src.app import db
-from .models import User
-from src.blueprints.stories.models import Story, Comments, Bookmark, Like
-
 import json
+import os
+import random
+from io import BytesIO
+
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
+import requests
+from flask import (
+    Blueprint,
+    abort,
+    flash,
+    redirect,
+    render_template,
+    request,
+    send_file,
+    session,
+    url_for,
+)
 from googleapiclient.discovery import build
+from passlib.hash import sha256_crypt as encryption
+from sqlalchemy.sql.elements import or_
+
+from src.app import db
+from src.blueprints.stories.models import Bookmark, Comments, Like, Story
+
+from .models import User
 
 users = Blueprint("users", __name__, template_folder="templates")
 
@@ -108,7 +111,7 @@ def login():
         password = form.get("password")
 
         user = db.session.execute(db.select(User).filter(User.email == email)).scalar()
-        print(user, email)
+
         if not user:
             flash("User not found", "denger")
             return redirect(url_for("users.login"))
@@ -272,7 +275,7 @@ def change_password(username):
         current_passowrd = form.get("current_password")
         new_password = form.get("new_password")
         confirm_password = form.get("confirm_password")
-        print(current_passowrd, new_password, confirm_password)
+
         user = db.session.execute(
             db.select(User).filter_by(id=session_user_id)
         ).scalar()
