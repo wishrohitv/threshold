@@ -14,7 +14,7 @@ if Settings.DEBUG_MODE:
 from .utils.context_processors.return_story_slug import return_story_slug
 from .utils.error_handler.page_not_found import return_404_page
 
-db = SQLAlchemy()
+db = SQLAlchemy(engine_options={"pool_pre_ping": True})
 
 
 def create_app():
