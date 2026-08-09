@@ -1,5 +1,5 @@
-from src.app import create_app
-from src.settings import Settings
+from app import create_app
+from settings import Settings
 
 app = create_app()
 

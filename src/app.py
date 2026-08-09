@@ -5,14 +5,14 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.middleware.proxy_fix import ProxyFix
 
-from .settings import Settings
+from settings import Settings
 
 if Settings.DEBUG_MODE:
     # Allow insecure HTTP connections for local testing
     os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
-from .utils.context_processors.return_story_slug import return_story_slug
-from .utils.error_handler.page_not_found import return_404_page
+from utils.context_processors.return_story_slug import return_story_slug
+from utils.error_handler.page_not_found import return_404_page
 
 db = SQLAlchemy(engine_options={"pool_pre_ping": True})
 
@@ -33,8 +33,8 @@ def create_app():
     db.init_app(app)
 
     # import models so SQLAlchemy can resolve relationships
-    from .blueprints.stories.models import Comments, Like, Story  # noqa: F401
-    from .blueprints.users.models import BlockedUser, User  # noqa: F401
+    from blueprints.stories.models import Comments, Like, Story  # noqa: F401
+    from blueprints.users.models import BlockedUser, User  # noqa: F401
 
     # create all tables
     with app.app_context():
@@ -44,11 +44,11 @@ def create_app():
     app.context_processor(return_story_slug)
 
     # import and register all blueprints
-    from .blueprints.about.routes import about
-    from .blueprints.index.routes import index_bp
-    from .blueprints.search.routes import search_bp
-    from .blueprints.stories.routes import stories
-    from .blueprints.users.routes import users
+    from blueprints.about.routes import about
+    from blueprints.index.routes import index_bp
+    from blueprints.search.routes import search_bp
+    from blueprints.stories.routes import stories
+    from blueprints.users.routes import users
 
     app.register_blueprint(index_bp, url_prefix="/")
 

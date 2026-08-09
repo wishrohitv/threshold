@@ -1,8 +1,9 @@
-from flask import Blueprint, render_template, redirect, url_for, request
-from src.blueprints.stories.models import Story, Like, Bookmark, Comments
-from src.blueprints.users.models import User
+from flask import Blueprint, redirect, render_template, request, url_for
 from sqlalchemy import or_
-from src.app import db
+
+from app import db
+from blueprints.stories.models import Bookmark, Comments, Like, Story
+from blueprints.users.models import User
 
 search_bp = Blueprint("search", __name__, template_folder="templates")
 

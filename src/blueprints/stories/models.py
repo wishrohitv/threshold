@@ -1,6 +1,7 @@
 import base64
-from src.app import db
 from datetime import datetime
+
+from app import db
 
 
 class Story(db.Model):

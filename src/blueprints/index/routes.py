@@ -1,8 +1,9 @@
-from flask import request, render_template, redirect, url_for, Blueprint, session, abort
+from flask import Blueprint, abort, redirect, render_template, request, session, url_for
 from sqlalchemy import literal
-from src.app import db
-from src.blueprints.stories.models import Story, Like, Comments, Bookmark
-from src.blueprints.users.models import User
+
+from app import db
+from blueprints.stories.models import Bookmark, Comments, Like, Story
+from blueprints.users.models import User
 
 index_bp = Blueprint("index", __name__, template_folder="templates")
 

@@ -21,8 +21,8 @@ from googleapiclient.discovery import build
 from passlib.hash import sha256_crypt as encryption
 from sqlalchemy.sql.elements import or_
 
-from src.app import db
-from src.blueprints.stories.models import Bookmark, Comments, Like, Story
+from app import db
+from blueprints.stories.models import Bookmark, Comments, Like, Story
 
 from .models import User
 

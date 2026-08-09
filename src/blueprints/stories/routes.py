@@ -1,20 +1,22 @@
 import uuid
 from io import BytesIO
+
 from flask import (
-    request,
-    render_template,
+    Blueprint,
+    abort,
+    flash,
     redirect,
+    render_template,
+    request,
+    send_file,
     session,
     url_for,
-    Blueprint,
-    flash,
-    abort,
-    send_file,
 )
-from src.utils.generate_slug import generate_slug_from_title
-from src.app import db
-from src.blueprints.stories.models import Story, Comments, Like, Bookmark
-from src.blueprints.users.models import User
+
+from app import db
+from blueprints.stories.models import Bookmark, Comments, Like, Story
+from blueprints.users.models import User
+from utils.generate_slug import generate_slug_from_title
 
 stories = Blueprint("stories", __name__, template_folder="templates")
 
