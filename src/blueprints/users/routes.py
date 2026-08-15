@@ -46,7 +46,9 @@ def _get_flow():
     if os.path.exists(client_secret_path):
         # Local dev — use the file directly
         return google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-            client_secret_path, scopes=OAUTH_SCOPES
+            client_secret_path,
+            scopes=OAUTH_SCOPES,
+            autogenerate_code_verifier=True,  # Forces the library to handle PKCE lifecycle
         )
 
     # Production — load JSON from env var, no temp file needed
@@ -60,7 +62,9 @@ def _get_flow():
         )
     client_config = json.loads(secret_json)
     return google_auth_oauthlib.flow.Flow.from_client_config(
-        client_config, scopes=OAUTH_SCOPES
+        client_config,
+        scopes=OAUTH_SCOPES,
+        autogenerate_code_verifier=True,  # Forces the library to handle PKCE lifecycle
     )
 
 
@@ -323,6 +327,7 @@ def google_oauth():
         # Optional, set prompt to 'consent' will prompt the user for consent
         prompt="consent",
     )
+    session["state"] = state
     return redirect(authorization_url)
 
 
