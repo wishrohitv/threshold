@@ -6,4 +6,5 @@
 **/migrations/
 client_secret.json
 .ruff_cache
+.pytest_cache
 .env
