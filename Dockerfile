@@ -11,4 +11,4 @@ ENV PORT=3000
 
 EXPOSE 3000
 
-CMD [ "gunicorn", "-w", "2", "-b", "0.0.0.0:3000", "--capture-output", "--log-level", "info", "run:app" ]
+CMD [ "gunicorn", "--chdir", "src", "-w", "2", "-b", "0.0.0.0:3000", "--capture-output", "--log-level", "info", "run:app" ]
