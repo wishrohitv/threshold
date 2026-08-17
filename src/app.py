@@ -36,9 +36,10 @@ def create_app():
     from blueprints.stories.models import Comments, Like, Story  # noqa: F401
     from blueprints.users.models import BlockedUser, User  # noqa: F401
 
-    # create all tables
+    # create all tables — use checkfirst=True
+    # when tables already exist in the database
     with app.app_context():
-        db.create_all()
+        db.metadata.create_all(bind=db.engine, checkfirst=True)
 
     # Register context processor
     app.context_processor(return_story_slug)
