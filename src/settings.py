@@ -8,7 +8,7 @@ load_dotenv()
 
 class Settings:
     APP_NAME = os.environ.get("APP_NAME", "Threshold")
-    APP_VERSION = os.environ.get("APP_VERSION", "1.2.1")
+    APP_VERSION = os.environ.get("APP_VERSION", "1.2.3")
     PORT = int(os.environ.get("PORT", "5000"))
     HOST = os.environ.get("HOST", "0.0.0.0")
     DEBUG_MODE = os.environ.get("DEBUG_MODE", "False").lower() == "true"
